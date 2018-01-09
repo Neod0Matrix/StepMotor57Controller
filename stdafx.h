@@ -7,6 +7,24 @@
 //==========================================================================
 //Windows编程stdafx.h全局声明
 
+//工程声明
+//MCU资源
+#define __MCU_Model__			"STC89C52RC"			//主控芯片型号
+#define __MCU_Flash_Size__		"64"					//Flash
+#define __MCU_SRAM_Size__		"2"						//SRAM
+
+//工程声明
+#define __Project_Type__		"PMC"					//工程类型
+#define __AbbrProjectName__		"StepMotor57Controller"	//名称缩写
+#define __Code_Version__ 		"OS_v0p3_LTE"			//长期演进版
+#define __Laboratory__			"T.WKVER"				//实验室
+#define __Logo__				"Absolute Liberal"		//logo
+#define __Developer__			"Neod Anderjon"			//开发者
+#define __AbbrDeveloper__		"NA"					//开发者缩写
+#define __Organization__		"</MATRIX>"				//组织
+#define __Topple_Over__			"_(:з」∠)_ _(┐「ε:)_"	//趴下颜文字
+#define __FunnyWord__			"(ಡωಡ)"					//滑稽颜文字
+
 //数据类型声明
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;

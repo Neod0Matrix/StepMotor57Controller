@@ -96,11 +96,13 @@ void Timer_InitConfig (void)
 	TimerInitValueOperate(Timer1, Timer1Value, bitNone);    
 	TimerEnableAllOperate(Enable);					//打开定时器总使能
 	
+	//脉冲发生器
 	TimerInterruptOperate(Timer0, Enable);
 	TimerEnableTimerOperate(Timer0, Enable);		//T0开中断使能
-	TimerTriggerRegisterOperate(Timer0, Enable);	//打开T0			
+	TimerTriggerRegisterOperate(Timer0, Disable);	//初始关闭T0
 	TimerExternInterruptOperate(Timer0, Enable);	//打开外部中断0使能
 	
+	//红外解码
 	//T1不使能ET1，只使用外部中断
 	TimerTriggerRegisterOperate(Timer1, Enable);	//打开T1			
 	TimerInterruptOperate(Timer1, Enable);			//允许外部中断
@@ -115,6 +117,41 @@ void Timer_InitConfig (void)
 	ReversalRange = 2 * RadTransferLine * RotationDistance - 1u;
 	MotorStatusFlag = Stew;							//默认静置
 	MotorModeFlag = LimitRun;						//默认有限运行
+}
+
+//电机停止转动
+void PulseProduce_Stop (void)
+{								
+	TimerTriggerRegisterOperate(Timer0, Disable);	//失能定时器T0	
+	IO_MainPulse = 1;								//脉冲IO口拉高
+	divFreqCnt = 0;
+	ReversalCnt = ReversalRange;
+	MotorStatusFlag = Stew;
+	LEDGroupCtrl(led_0, Off);
+	
+	if (lcd_es == dis_status)
+		LCD1602_DisplayString(3, ROW1, Stop);	
+}
+
+//固有脉冲数自动完成
+void PulseProduce_Start(void)					    
+{				
+	//判断送入值是否有效
+	if (SettingSpeedHz != 0u && RotationDistance != 0u)
+	{
+		//计数变量初始化清零
+		divFreqCnt = 0;
+		ReversalCnt = 0;						
+		//更新判断量，把计算放在中断外面执行
+		CalDivFreqConst = DivFreqMaxRange / SettingSpeedHz - 1u;
+		ReversalRange = 2 * RadTransferLine * RotationDistance - 1u;
+		LEDGroupCtrl(led_0, On);
+		MotorStatusFlag = Run;
+		if (lcd_es == dis_status)
+			LCD1602_DisplayString(3, ROW1, Start);
+		//使能T0定时器，脉冲开始处理计数和发送		
+		TimerTriggerRegisterOperate(Timer0, Enable);							
+	}
 }
 
 /*
@@ -172,41 +209,6 @@ void ExternInt0Service () interrupt 0
 		}
 	}
 	TimerExternInterruptOperate(Timer0, Enable);
-}
-
-//电机停止转动
-void PulseProduce_Stop (void)
-{								
-	TimerTriggerRegisterOperate(Timer0, Disable);	//失能定时器T0	
-	IO_MainPulse = 1;								//脉冲IO口拉高
-	divFreqCnt = 0;
-	ReversalCnt = ReversalRange;
-	MotorStatusFlag = Stew;
-	LEDGroupCtrl(led_0, Off);
-	
-	if (lcd_es == dis_status)
-		LCD1602_DisplayString(3, ROW1, Stop);	
-}
-
-//固有脉冲数自动完成
-void PulseProduce_Start(void)					    
-{				
-	//判断送入值是否有效
-	if (SettingSpeedHz != 0u && RotationDistance != 0u)
-	{
-		//计数变量初始化清零
-		divFreqCnt = 0;
-		ReversalCnt = 0;						
-		//更新判断量，把计算放在中断外面执行
-		CalDivFreqConst = DivFreqMaxRange / SettingSpeedHz - 1u;
-		ReversalRange = 2 * RadTransferLine * RotationDistance - 1u;
-		LEDGroupCtrl(led_0, On);
-		MotorStatusFlag = Run;
-		if (lcd_es == dis_status)
-			LCD1602_DisplayString(3, ROW1, Start);
-		//使能T0定时器，脉冲开始处理计数和发送		
-		TimerTriggerRegisterOperate(Timer0, Enable);							
-	}
 }
 
 //切换电机运行模式
