@@ -7,12 +7,10 @@
 //==========================================================================
 //Windows编程stdafx.h全局声明
 
-//工程声明
 //MCU资源
 #define __MCU_Model__			"STC89C52RC"			//主控芯片型号
 #define __MCU_Flash_Size__		"64"					//Flash
 #define __MCU_SRAM_Size__		"2"						//SRAM
-
 //工程声明
 #define __Project_Type__		"PMC"					//工程类型
 #define __AbbrProjectName__		"StepMotor57Controller"	//名称缩写
@@ -26,10 +24,10 @@
 #define __FunnyWord__			"(ಡωಡ)"					//滑稽颜文字
 
 //数据类型声明
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned int uint32_t;
-typedef unsigned long uint64_t;
+typedef unsigned char 			uint8_t;
+typedef unsigned short 			uint16_t;
+typedef unsigned int 			uint32_t;
+typedef unsigned long 			uint64_t;
 #define u8 						uint8_t
 #define u16 					uint16_t
 #define u32 					uint32_t
@@ -37,8 +35,8 @@ typedef unsigned long uint64_t;
 
 //IO映射
 //LED
-sbit LED0 			= P1^0;
-sbit LED1 			= P1^1;
+sbit LED0 			= P1^0;								//电机运行状态LED
+sbit LED1 			= P1^1;								//按键触发指示LED
 //外部中断红外接收管
 sbit IO_EmeStop 	= P3^2;
 sbit IO_Remote 		= P3^3;
@@ -78,9 +76,12 @@ sbit IO_Direction 	= P3^7;
 #define OneCircultPulse 		200.0f * DivisionConst		
 #define OneCircult360			360.0f		//360度
 #define RadUnitConst			(OneCircultPulse / OneCircult360)				//输入角度，转换成脉冲数
-#define PI_3p14					3.141f
-#define AxisRadius				15			//轴半径，单位mm
+#define PI_3p14					3.141f		
+#define AxisRadius				9.5			//轴半径，单位mm
 #define LineUnitConst			(OneCircultPulse / (2 * PI_3p14 * AxisRadius))	//输入线度，转换成脉冲数
+#define SpeedDValue				500			//速度加减差值，单位hz
+#define RadDValue				30			//角度加减差值，单位度
+#define LineDValue				5			//线度加减差值，单位mm
 
 //bool型数据
 typedef enum {True = 1, False = !True} Bool_ClassType;

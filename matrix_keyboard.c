@@ -141,10 +141,10 @@ void MatrixKeyValueHandler (void)
 	case kv_stop: 		PulseProduce_Stop(); 					break;	//急停
 	case kv_dir_l: 		MotorPostiveRot;						break;	//正转											
 	case kv_dir_r: 		MotorNegativeRot;						break;	//反转											
-	case kv_ra_plus: 	RotationDistance += DValueSetting();	break;	//增加转动角度，额度30
-	case kv_ra_minu: 	RotationDistance -= DValueSetting(); 	break;	//减少转动角度，额度30
-	case kv_rs_plus: 	SettingSpeedHz += 500; 					break;	//增加转速，额度500
-	case kv_rs_minu: 	SettingSpeedHz -= 500; 					break;	//减少转速，额度500
+	case kv_ra_plus: 	RotationDistance += DValueSetting();	break;	//增加转动角度
+	case kv_ra_minu: 	RotationDistance -= DValueSetting(); 	break;	//减少转动角度
+	case kv_rs_plus: 	SettingSpeedHz += SpeedDValue; 			break;	//增加转速
+	case kv_rs_minu: 	SettingSpeedHz -= SpeedDValue; 			break;	//减少转速
 	}
 }
 

@@ -4,15 +4,15 @@
 //脉冲配置发生器
 
 //全局变量声明
-u32 ReversalCnt;
-u32 SettingSpeedHz;
-u32 RotationDistance;
-u32 divFreqCnt;
-u32 CalDivFreqConst;
-u32 ReversalRange;
-MotorRunStatus MotorStatusFlag;
-MotorRunMode MotorModeFlag;
-LineRadSelect lrs_flag;
+u32 SettingSpeedHz;						//转速设定，直接关系到实际转速和显示值
+u32 RotationDistance;					//转动角度，直接关系到实际转速和显示值
+u32 divFreqCnt;							//分频计数变量
+u32 CalDivFreqConst;					//分频设定常数，影响速度				
+u32 ReversalCnt;						//脉冲回收计数变量
+u32 ReversalRange;						//脉冲回收设定常数，影响行距
+MotorRunStatus MotorStatusFlag;			//电机运行状态标志
+MotorRunMode MotorModeFlag;				//电机运行模式标志
+LineRadSelect lrs_flag;					//线度角度切换标志
 
 //EA寄存器操作
 void TimerEnableAllOperate (FunctionStatus flag)
@@ -29,37 +29,29 @@ void TimerModeRegisterOperate (char order)
 //ITx寄存器操作
 void TimerInterruptOperate (TimerNumber nbr, FunctionStatus flag)
 {
-	if (nbr == Timer0)
-		IT0 = flag;
-	else if (nbr == Timer1)
-		IT1 = flag;
+	if (nbr == Timer0) IT0 = flag;
+	else if (nbr == Timer1) IT1 = flag;
 }
 
 //ETx寄存器操作
 void TimerEnableTimerOperate (TimerNumber nbr, FunctionStatus flag)
 {
-	if (nbr == Timer0)
-		ET0 = flag;
-	else if (nbr == Timer1)
-		ET1 = flag;
+	if (nbr == Timer0) ET0 = flag;
+	else if (nbr == Timer1) ET1 = flag;
 }
 
 //TRx寄存器操作
 void TimerTriggerRegisterOperate (TimerNumber nbr, FunctionStatus flag)
 {
-	if (nbr == Timer0)
-		TR0 = flag;
-	else if (nbr == Timer1)
-		TR1 = flag;
+	if (nbr == Timer0) TR0 = flag;
+	else if (nbr == Timer1) TR1 = flag;
 }
 
 //EXx寄存器操作
 void TimerExternInterruptOperate (TimerNumber nbr, FunctionStatus flag)
 {
-	if (nbr == Timer0)
-		EX0 = flag;
-	else if (nbr == Timer1)
-		EX1 = flag;
+	if (nbr == Timer0) EX0 = flag;
+	else if (nbr == Timer1) EX1 = flag;
 }
 
 //THx，TLx寄存器操作
@@ -83,6 +75,16 @@ void TimerInitValueOperate (TimerNumber nbr, u32 value, TimerBit bt)
 	{
 		TH1 = hBitValue;
 		TL1 = lBitValue;
+	}
+}
+
+//更新行距计算
+void DistanceAlgoUpdate (void)
+{
+	switch (lrs_flag)
+	{
+	case RadUnit: 	ReversalRange = 2 * RadUnitConst * RotationDistance - 1u; 	break;
+	case LineUnit: 	ReversalRange = 2 * LineUnitConst * RotationDistance - 1u; 	break;
 	}
 }
 
@@ -129,11 +131,7 @@ void PulseProduce_Stop (void)
 	IO_MainPulse = 1;								//脉冲IO口拉高
 	divFreqCnt = 0;
 	ReversalCnt = ReversalRange;
-	MotorStatusFlag = Stew;
-	LEDGroupCtrl(led_0, Off);
-	
-	if (lcd_es == dis_status)
-		LCD1602_DisplayString(3, ROW1, Stop);	
+	MotorStatusFlag = Stew;							//该标志位直接控制LCD和LED的状态更新
 }
 
 //固有脉冲数自动完成
@@ -148,10 +146,7 @@ void PulseProduce_Start(void)
 		//更新判断量，把计算放在中断外面执行
 		CalDivFreqConst = DivFreqMaxRange / SettingSpeedHz - 1u;
 		DistanceAlgoUpdate();
-		LEDGroupCtrl(led_0, On);
-		MotorStatusFlag = Run;
-		if (lcd_es == dis_status)
-			LCD1602_DisplayString(3, ROW1, Start);
+		MotorStatusFlag = Run;						//该标志位直接控制LCD和LED的状态更新
 		//使能T0定时器，脉冲开始处理计数和发送		
 		TimerTriggerRegisterOperate(Timer0, Enable);							
 	}
@@ -204,7 +199,6 @@ void ExternInt0Service () interrupt 0
 			divFreqCnt = 0;
 			ReversalCnt = ReversalRange;
 			MotorStatusFlag = Stew;
-			LEDGroupCtrl(led_0, Off);
 			
 			while (!IO_EmeStop);					//等待释放
 			delay_ms(50);
@@ -217,7 +211,8 @@ void ExternInt0Service () interrupt 0
 //切换电机运行模式
 void MotorRunModeAdjust (void)
 {
-	MotorModeFlag = !MotorModeFlag;					//两种模式切换简写
+	//双值切换
+	MotorModeFlag = !MotorModeFlag;					
 }
 
 //切换输入量的度量单位
@@ -229,31 +224,6 @@ void LineRadUnitAdjust (void)
 	case RadUnit: 	lrs_flag = LineUnit; LCD1602_DisplayString(0, ROW2, RotationMeter); break;
 	case LineUnit: 	lrs_flag = RadUnit; LCD1602_DisplayString(0, ROW2, RotationAngle); 	break;
 	}
-}
-
-//更新行距计算
-void DistanceAlgoUpdate (void)
-{
-	switch (lrs_flag)
-	{
-	case RadUnit: 	ReversalRange = 2 * RadUnitConst * RotationDistance - 1u; 	break;
-	case LineUnit: 	ReversalRange = 2 * LineUnitConst * RotationDistance - 1u; 	break;
-	}
-}
-
-//更换差值
-u32 DValueSetting (void)
-{
-	u32 dvalue;
-	
-	switch (lrs_flag)
-	{
-	case RadUnit: 	dvalue = 30; 	break;	//30度
-	case LineUnit:  dvalue = 5; 	break;	//5mm
-	default: 		dvalue = 30; 	break;	//默认30度
-	}
-	
-	return dvalue;
 }
 
 //==========================================================================

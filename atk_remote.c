@@ -87,10 +87,10 @@ void RemoteDecodeValueHandler (void)
 		case r2: 		PulseProduce_Stop(); 					break;	//急停(红外解码的延时会干扰急停)
 		case r3: 		MotorPostiveRot;						break;	//正转
 		case r4: 		MotorNegativeRot; 						break;	//反转
-		case r5: 		RotationDistance += DValueSetting(); 	break;	//增加转动角度，额度30
-		case r6: 		RotationDistance -= DValueSetting(); 	break;	//减少转动角度，额度30
-		case r7: 		SettingSpeedHz += 500; 					break;	//增加转速，额度500
-		case r8: 		SettingSpeedHz -= 500; 					break;	//减少转速，额度500
+		case r5: 		RotationDistance += DValueSetting(); 	break;	//增加转动角度
+		case r6: 		RotationDistance -= DValueSetting(); 	break;	//减少转动角度
+		case r7: 		SettingSpeedHz += SpeedDValue; 			break;	//增加转速
+		case r8: 		SettingSpeedHz -= SpeedDValue; 			break;	//减少转速
 		}
 		//解码复位
 		dv = rnone;

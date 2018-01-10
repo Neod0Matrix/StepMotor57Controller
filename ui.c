@@ -94,9 +94,15 @@ void LCD1602DisplayUpdate (void)
 	{
 		//更新电机运行状态
 		if (MotorStatusFlag == Stew)
+		{
+			LEDGroupCtrl(led_0, Off);
 			LCD1602_DisplayString(3, ROW1, Stop);
+		}
 		else
+		{
+			LEDGroupCtrl(led_0, On);
 			LCD1602_DisplayString(3, ROW1, Start);
+		}
 		//更新方向
 		if (IO_Direction == posrot)
 			LCD1602_DisplayString(13, ROW1, Postive);
@@ -105,7 +111,26 @@ void LCD1602DisplayUpdate (void)
 		//更新变量
 		LCD1602_DisplayNumber(3, RotationDistance, ROW2);
 		LCD1602_DisplayNumber(12, SettingSpeedHz, ROW2);
-	}		
+	}	
+	if (MotorStatusFlag == Stew)
+		LEDGroupCtrl(led_0, Off);
+	else
+		LEDGroupCtrl(led_0, On);
+}
+
+//更换差值
+u32 DValueSetting (void)
+{
+	u32 dvalue;
+	
+	switch (lrs_flag)
+	{
+	case RadUnit: 	dvalue = RadDValue; 	break;	
+	case LineUnit:  dvalue = LineDValue; 	break;	
+	default: 		dvalue = RadDValue; 	break;	//默认为角度控制
+	}
+	
+	return dvalue;
 }
 
 //==========================================================================

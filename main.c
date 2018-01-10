@@ -12,26 +12,24 @@ void PreSetUpHardware (void)
 	LEDGroupCtrl(led_0, Off);
 	LEDGroupCtrl(led_1, Off);
 	
-	//定时器初始化配置
-	Timer_InitConfig();	
+	Timer_InitConfig();							//定时器及脉冲计算器初始化配置
 	
 	//显示器初始化	
-	LCD1602_Init();								
+	LCD1602_Init();		
+	//来一段动画演示
 	LCD1602DisplayLogo();						
 	delay_ms(800);		
-	LCD1602DisplayStatus();
-	
-	//初始化完成
-	PreInitFinishedBlink();						
+	LCD1602DisplayStatus();				
 }
 
-//int main (int argc, char *argv[], char *envp[])			
+//total prototype: int main (int argc, char *argv[], char *envp[]);
 int main (void)
 {
 #ifdef DEBUG 											
 	debug();									//debug/release											
 #endif
 	PreSetUpHardware();							//初始化硬件底层
+	PreInitFinishedBlink();						//初始化完成
 	
 	while (True)
 	{
