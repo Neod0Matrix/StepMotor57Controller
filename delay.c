@@ -18,9 +18,7 @@ void delay_0p14ms (uint8_t x)
 	uint8_t i;        
 	
 	while (x--)                     		
-	{
 		for (i = 0; i < 13; i++);    		
-	}
 }
 
 //延时1ms

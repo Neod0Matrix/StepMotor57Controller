@@ -31,14 +31,9 @@ void ExternInt1Service () interrupt 2
 	//采集红外遥控器数据
 	for (j = 0; j < 4; j++)                     
 	{ 
-		//分次采集8位数据
 		for (k = 0; k < 8; k++)         
 		{
 			//等待输入变为低电平，跳过4.5ms高电平信号
-//			while (IO_Remote)                     
-//				delay_0p14ms(1);  
-//			while (!IO_Remote)                    
-//				delay_0p14ms(1);   
 			while (IO_Remote);                    
 			while (!IO_Remote);                      
 			

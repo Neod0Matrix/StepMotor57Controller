@@ -75,7 +75,7 @@ void LCD1602_DisplayString (u8 addr, LCD1602_Row row, u8 array[])
 
 	//逐字符显示，strlen求取字符串数组长度
     for (num = 0; num < strlen(array); num++)	
-	{	
+	{
 		LCD1602_WriteData(array[num]);	 
 		delay_us(5);
 	}

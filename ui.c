@@ -49,7 +49,11 @@ void LCD1602DisplayStatus (void)
 	LCD1602_DisplayString(9, ROW1, Direction);
 	LCD1602_DisplayString(13, ROW1, Postive);
 	//显示转速和转动角度
-	LCD1602_DisplayString(0, ROW2, RotationAngle);
+	switch (lrs_flag)
+	{
+	case LineUnit: 	LCD1602_DisplayString(0, ROW2, RotationMeter); break;
+	case RadUnit: 	LCD1602_DisplayString(0, ROW2, RotationAngle); break;
+	}
 	LCD1602_DisplayNumber(3, RotationDistance, ROW2);
 	LCD1602_DisplayString(9, ROW2, RotationSpeed);
 	LCD1602_DisplayNumber(12, SettingSpeedHz, ROW2);

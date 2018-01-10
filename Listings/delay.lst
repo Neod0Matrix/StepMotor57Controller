@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   DELAY                                                                 01/10/2018 11:39:41 PAGE 1   
+C51 COMPILER V9.54   DELAY                                                                 01/10/2018 14:34:19 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE DELAY
@@ -28,22 +28,20 @@ line level    source
   18   1              uint8_t i;        
   19   1              
   20   1              while (x--)                                     
-  21   1              {
-  22   2                      for (i = 0; i < 13; i++);               
-  23   2              }
-  24   1      }
-  25          
-  26          //延时1ms
-  27          void delay_ms (uint16_t i)                  
-  28          {
-  29   1              uint16_t m, n;
-  30   1              
-  31   1              for (m = i; m > 0; m--)
-  32   1                  for (n = 125; n > 0; n--);
-  33   1      }
-  34          
-  35          //==========================================================================
-  36          //Code by </MATRIX>@Neod Anderjon
+  21   1                      for (i = 0; i < 13; i++);               
+  22   1      }
+  23          
+  24          //延时1ms
+  25          void delay_ms (uint16_t i)                  
+  26          {
+  27   1              uint16_t m, n;
+  28   1              
+  29   1              for (m = i; m > 0; m--)
+  30   1                  for (n = 125; n > 0; n--);
+  31   1      }
+  32          
+  33          //==========================================================================
+  34          //Code by </MATRIX>@Neod Anderjon
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE

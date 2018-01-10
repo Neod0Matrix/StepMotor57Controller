@@ -3,6 +3,7 @@
 //==========================================================================
 //脉冲配置发生器
 
+//全局变量声明
 u32 ReversalCnt;
 u32 SettingSpeedHz;
 u32 RotationDistance;
@@ -238,8 +239,8 @@ void LineRadUnitAdjust (void)
 {
 	switch (lrs_flag)
 	{
-	case RadUnit: lrs_flag = LineUnit; LCD1602_DisplayString(0, ROW2, RotationMeter); break;
-	case LineUnit: lrs_flag = RadUnit; LCD1602_DisplayString(0, ROW2, RotationAngle); break;
+	case RadUnit: 	lrs_flag = LineUnit; LCD1602_DisplayString(0, ROW2, RotationMeter); break;
+	case LineUnit: 	lrs_flag = RadUnit; LCD1602_DisplayString(0, ROW2, RotationAngle); 	break;
 	}
 }
 
@@ -250,9 +251,9 @@ u32 DValueSetting (void)
 	
 	switch (lrs_flag)
 	{
-	case RadUnit: dvalue = 30; break;	//30度
-	case LineUnit:  dvalue = 5; break;	//5mm
-	default: dvalue = 30; break;		//默认30度
+	case RadUnit: 	dvalue = 30; 	break;	//30度
+	case LineUnit:  dvalue = 5; 	break;	//5mm
+	default: 		dvalue = 30; 	break;	//默认30度
 	}
 	
 	return dvalue;
