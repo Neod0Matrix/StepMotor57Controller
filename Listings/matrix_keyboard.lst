@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MATRIX_KEYBOARD                                                       01/10/2018 14:19:10 PAGE 1   
+C51 COMPILER V9.54   MATRIX_KEYBOARD                                                       01/10/2018 14:56:36 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MATRIX_KEYBOARD
@@ -62,7 +62,7 @@ line level    source
   52   3                              temp = MatrixCallPort;
   53   3                              LEDGroupCtrl(led_1, On);
   54   3                              switch (temp)
-C51 COMPILER V9.54   MATRIX_KEYBOARD                                                       01/10/2018 14:19:10 PAGE 2   
+C51 COMPILER V9.54   MATRIX_KEYBOARD                                                       01/10/2018 14:56:36 PAGE 2   
 
   55   3                              {
   56   4                                      //对应码d
@@ -126,7 +126,7 @@ line level    source
  114   4                                      //对应码7
  115   4                              case 0xe7: break;       //k4
  116   4                              case 0xd7: break;       //k8
-C51 COMPILER V9.54   MATRIX_KEYBOARD                                                       01/10/2018 14:19:10 PAGE 3   
+C51 COMPILER V9.54   MATRIX_KEYBOARD                                                       01/10/2018 14:56:36 PAGE 3   
 
  117   4                              case 0xb7: break;       //k12
  118   4                              case 0x77: break;       //k16

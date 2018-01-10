@@ -16,7 +16,7 @@
 //工程声明
 #define __Project_Type__		"PMC"					//工程类型
 #define __AbbrProjectName__		"StepMotor57Controller"	//名称缩写
-#define __Code_Version__ 		"OS_v0p3_LTE"			//长期演进版
+#define __Code_Version__ 		"OS_v0p5_LTE"			//长期演进版
 #define __Laboratory__			"T.WKVER"				//实验室
 #define __Logo__				"Absolute Liberal"		//logo
 #define __Developer__			"Neod Anderjon"			//开发者
@@ -251,6 +251,7 @@ extern void PulseProduce_Stop(void);
 extern void MotorRunModeAdjust (void);
 extern void LineRadUnitAdjust (void);
 extern u32 DValueSetting (void);
+extern void DistanceAlgoUpdate (void);
 //外设控制类函数
 extern KeyValueSetting MatrixKeyboard_Scan (void);
 extern void MatrixKeyValueHandler (void);

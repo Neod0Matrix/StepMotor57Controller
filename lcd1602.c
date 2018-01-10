@@ -77,7 +77,7 @@ void LCD1602_DisplayString (u8 addr, LCD1602_Row row, u8 array[])
     for (num = 0; num < strlen(array); num++)	
 	{
 		LCD1602_WriteData(array[num]);	 
-		delay_us(5);
+		delay_us(5);					//显示延时(LCD1602内部寄存器读写延时)
 	}
 }
 
