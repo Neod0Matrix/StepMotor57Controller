@@ -137,14 +137,14 @@ void MatrixKeyValueHandler (void)
 	
 	switch (kv)
 	{
-	case kv_start: 		PulseProduce_Start();	break;	//电机启动
-	case kv_stop: 		PulseProduce_Stop(); 	break;	//急停
-	case kv_dir_l: 		MotorPostiveRot;		break;	//正转											
-	case kv_dir_r: 		MotorNegativeRot;		break;	//反转											
-	case kv_ra_plus: 	RotationDistance += 30; break;	//增加转动角度，额度30
-	case kv_ra_minu: 	RotationDistance -= 30; break;	//减少转动角度，额度30
-	case kv_rs_plus: 	SettingSpeedHz += 500; 	break;	//增加转速，额度500
-	case kv_rs_minu: 	SettingSpeedHz -= 500; 	break;	//减少转速，额度500
+	case kv_start: 		PulseProduce_Start();					break;	//电机启动
+	case kv_stop: 		PulseProduce_Stop(); 					break;	//急停
+	case kv_dir_l: 		MotorPostiveRot;						break;	//正转											
+	case kv_dir_r: 		MotorNegativeRot;						break;	//反转											
+	case kv_ra_plus: 	RotationDistance += DValueSetting();	break;	//增加转动角度，额度30
+	case kv_ra_minu: 	RotationDistance -= DValueSetting(); 	break;	//减少转动角度，额度30
+	case kv_rs_plus: 	SettingSpeedHz += 500; 					break;	//增加转速，额度500
+	case kv_rs_minu: 	SettingSpeedHz -= 500; 					break;	//减少转速，额度500
 	}
 }
 

@@ -28,7 +28,7 @@ void LEDGroupCtrl (LEDGroupNbr nbr, LEDMoveList mv)
 }
 
 //初始化完成闪烁标志
-void Aft_PeriInit_Blink (void)
+void PreInitFinishedBlink (void)
 {
     u8 bb;													
 	

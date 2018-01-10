@@ -1,0 +1,294 @@
+C51 COMPILER V9.54   PULSE_CONFIG                                                          01/10/2018 11:39:41 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE PULSE_CONFIG
+OBJECT MODULE PLACED IN .\Objects\pulse_config.obj
+COMPILER INVOKED BY: D:\Program Files (x86)\KeiluVision\C51\C51\BIN\C51.EXE pulse_config.c OPTIMIZE(9,SPEED) BROWSE DEBU
+                    -G OBJECTEXTEND PRINT(.\Listings\pulse_config.lst) OBJECT(.\Objects\pulse_config.obj)
+
+line level    source
+
+   1          #include "stdafx.h"
+   2          //code by </MATRIX>@Neod Anderjon
+   3          //==========================================================================
+   4          //脉冲配置发生器
+   5          
+   6          u32 ReversalCnt;
+   7          u32 SettingSpeedHz;
+   8          u32 RotationDistance;
+   9          u32 divFreqCnt;
+  10          u32 CalDivFreqConst;
+  11          u32 ReversalRange;
+  12          MotorRunStatus MotorStatusFlag;
+  13          MotorRunMode MotorModeFlag;
+  14          LineRadSelect lrs_flag;
+  15          
+  16          //EA寄存器操作
+  17          void TimerEnableAllOperate (FunctionStatus flag)
+  18          {
+  19   1              EA = flag;
+  20   1      }
+  21          
+  22          //TMOD定时器模式寄存器操作
+  23          void TimerModeRegisterOperate (char order)
+  24          {
+  25   1              TMOD = order;
+  26   1      }
+  27          
+  28          //ITx寄存器操作
+  29          void TimerInterruptOperate (TimerNumber nbr, FunctionStatus flag)
+  30          {
+  31   1              if (nbr == Timer0)
+  32   1                      IT0 = flag;
+  33   1              else if (nbr == Timer1)
+  34   1                      IT1 = flag;
+  35   1      }
+  36          
+  37          //ETx寄存器操作
+  38          void TimerEnableTimerOperate (TimerNumber nbr, FunctionStatus flag)
+  39          {
+  40   1              if (nbr == Timer0)
+  41   1                      ET0 = flag;
+  42   1              else if (nbr == Timer1)
+  43   1                      ET1 = flag;
+  44   1      }
+  45          
+  46          //TRx寄存器操作
+  47          void TimerTriggerRegisterOperate (TimerNumber nbr, FunctionStatus flag)
+  48          {
+  49   1              if (nbr == Timer0)
+  50   1                      TR0 = flag;
+  51   1              else if (nbr == Timer1)
+  52   1                      TR1 = flag;
+  53   1      }
+  54          
+C51 COMPILER V9.54   PULSE_CONFIG                                                          01/10/2018 11:39:41 PAGE 2   
+
+  55          //EXx寄存器操作
+  56          void TimerExternInterruptOperate (TimerNumber nbr, FunctionStatus flag)
+  57          {
+  58   1              if (nbr == Timer0)
+  59   1                      EX0 = flag;
+  60   1              else if (nbr == Timer1)
+  61   1                      EX1 = flag;
+  62   1      }
+  63          
+  64          //THx，TLx寄存器操作
+  65          void TimerInitValueOperate (TimerNumber nbr, u32 value, TimerBit bt)
+  66          {
+  67   1              uint32_t hBitValue, lBitValue;
+  68   1              
+  69   1              switch (bt)
+  70   1              {
+  71   2              case bit8: hBitValue = (256 - value); lBitValue = (256 - value); break;
+  72   2              case bit13: hBitValue = (8192 - value) / 256; lBitValue = (8192 - value) % 256; break;
+  73   2              case bit16: hBitValue = (65536 - value) / 256; lBitValue = (65536 - value) % 256; break;
+  74   2              case bitNone: hBitValue = value; lBitValue = value; break;
+  75   2              }
+  76   1              if (nbr == Timer0)
+  77   1              {
+  78   2                      TH0 = hBitValue;
+  79   2                      TL0 = lBitValue;
+  80   2              }
+  81   1              else if (nbr == Timer1)
+  82   1              {
+  83   2                      TH1 = hBitValue;
+  84   2                      TL1 = lBitValue;
+  85   2              }
+  86   1      }
+  87          
+  88          //定时器初始配置
+  89          void Timer_InitConfig (void)
+  90          {
+  91   1              /*
+  92   1                      定时器0用于脉冲发生器及急停外部中断
+  93   1                      定时器1开启外部中断用于红外解码接收
+  94   1              */
+  95   1              TimerModeRegisterOperate(0x01);         
+  96   1              TimerInitValueOperate(Timer0, Timer0Value, bit16);
+  97   1              TimerInitValueOperate(Timer1, Timer1Value, bitNone);    
+  98   1              TimerEnableAllOperate(Enable);                                  //打开定时器总使能
+  99   1              
+ 100   1              //脉冲发生器
+ 101   1              TimerInterruptOperate(Timer0, Enable);
+ 102   1              TimerEnableTimerOperate(Timer0, Enable);                //T0开中断使能
+ 103   1              TimerTriggerRegisterOperate(Timer0, Disable);   //初始关闭T0
+ 104   1              TimerExternInterruptOperate(Timer0, Enable);    //打开外部中断0使能
+ 105   1              
+ 106   1              //红外解码
+ 107   1              //T1不使能ET1，只使用外部中断
+ 108   1              TimerTriggerRegisterOperate(Timer1, Enable);    //打开T1                      
+ 109   1              TimerInterruptOperate(Timer1, Enable);                  //允许外部中断
+ 110   1              TimerExternInterruptOperate(Timer1, Enable);    //打开外部中断1使能
+ 111   1          
+ 112   1              //设定脉冲使用初值
+ 113   1              ReversalCnt = 0;
+ 114   1              SettingSpeedHz = 500;                           
+ 115   1              RotationDistance = 360;
+ 116   1              divFreqCnt = 0;
+C51 COMPILER V9.54   PULSE_CONFIG                                                          01/10/2018 11:39:41 PAGE 3   
+
+ 117   1              CalDivFreqConst = DivFreqMaxRange / SettingSpeedHz - 1u;
+ 118   1              //初始化行距计算
+ 119   1              switch (lrs_flag)
+ 120   1              {
+ 121   2              case RadUnit: ReversalRange = 2 * RadUnitConst * RotationDistance - 1u; break;
+ 122   2              case LineUnit: ReversalRange = 2 * LineUnitConst * RotationDistance - 1u; break;
+ 123   2              }
+ 124   1              MotorStatusFlag = Stew;                                                 //默认静置
+ 125   1              MotorModeFlag = LimitRun;                                               //默认有限运行
+ 126   1      }
+ 127          
+ 128          //电机停止转动
+ 129          void PulseProduce_Stop (void)
+ 130          {                                                               
+ 131   1              TimerTriggerRegisterOperate(Timer0, Disable);   //失能定时器T0     
+ 132   1              IO_MainPulse = 1;                                                               //脉冲IO口拉高
+ 133   1              divFreqCnt = 0;
+ 134   1              ReversalCnt = ReversalRange;
+ 135   1              MotorStatusFlag = Stew;
+ 136   1              LEDGroupCtrl(led_0, Off);
+ 137   1              
+ 138   1              if (lcd_es == dis_status)
+ 139   1                      LCD1602_DisplayString(3, ROW1, Stop);   
+ 140   1      }
+ 141          
+ 142          //固有脉冲数自动完成
+ 143          void PulseProduce_Start(void)                                       
+ 144          {                               
+ 145   1              //判断送入值是否有效
+ 146   1              if (SettingSpeedHz != 0u && RotationDistance != 0u)
+ 147   1              {
+ 148   2                      //计数变量初始化清零
+ 149   2                      divFreqCnt = 0;
+ 150   2                      ReversalCnt = 0;                                                
+ 151   2                      //更新判断量，把计算放在中断外面执行
+ 152   2                      CalDivFreqConst = DivFreqMaxRange / SettingSpeedHz - 1u;
+ 153   2                      //更新行距计算
+ 154   2                      switch (lrs_flag)
+ 155   2                      {
+ 156   3                      case RadUnit: ReversalRange = 2 * RadUnitConst * RotationDistance - 1u; break;
+ 157   3                      case LineUnit: ReversalRange = 2 * LineUnitConst * RotationDistance - 1u; break;
+ 158   3                      }
+ 159   2                      LEDGroupCtrl(led_0, On);
+ 160   2                      MotorStatusFlag = Run;
+ 161   2                      if (lcd_es == dis_status)
+ 162   2                              LCD1602_DisplayString(3, ROW1, Start);
+ 163   2                      //使能T0定时器，脉冲开始处理计数和发送         
+ 164   2                      TimerTriggerRegisterOperate(Timer0, Enable);                                                    
+ 165   2              }
+ 166   1      }
+ 167          
+ 168          /*
+ 169                  定时器0中断服务
+ 170                  中断内部不要进行计算，51计算会产生不可预估的延时
+ 171          */
+ 172          void Timer0Service () interrupt 1
+ 173          {
+ 174   1              //TimerInitValueOperate(Timer0, Timer0Value, bit16);//函数不可重入
+ 175   1              TH0 = (65536 - Timer0Value) / 256;
+ 176   1              TL0 = (65536 - Timer0Value) % 256;
+ 177   1              
+ 178   1              //更新分频系数
+C51 COMPILER V9.54   PULSE_CONFIG                                                          01/10/2018 11:39:41 PAGE 4   
+
+ 179   1              if (divFreqCnt == CalDivFreqConst)
+ 180   1          {
+ 181   2              divFreqCnt = 0;
+ 182   2              IO_MainPulse = !IO_MainPulse;   
+ 183   2                      if (ReversalCnt == ReversalRange && MotorModeFlag == LimitRun)
+ 184   2                      {
+ 185   3                              //此处进行计算(不管复杂度)会干扰信号频率
+ 186   3                              TimerTriggerRegisterOperate(Timer0, Disable);   
+ 187   3                              IO_MainPulse = 1;       
+ 188   3                              MotorStatusFlag = Stew;
+ 189   3                      }
+ 190   2                      ReversalCnt++;  
+ 191   2          }
+ 192   1              divFreqCnt++;
+ 193   1      }
+ 194          
+ 195          //外部中断急停(速度比矩阵键盘和红外解码要快很多)
+ 196          void ExternInt0Service () interrupt 0
+ 197          {
+ 198   1              TimerExternInterruptOperate(Timer0, Disable);
+ 199   1              if (IO_EmeStop == 0)
+ 200   1              {
+ 201   2                      delay_ms(10);
+ 202   2                      if (IO_EmeStop == 0)
+ 203   2                      {
+ 204   3                              LEDGroupCtrl(led_1, On);
+ 205   3                              
+ 206   3                              /*
+ 207   3                                      这里和PulseProduce_Stop()内容是一样的
+ 208   3                                      但是直接调用PulseProduce_Stop()会有函数重入的警告
+ 209   3                              */
+ 210   3                              TimerTriggerRegisterOperate(Timer0, Disable);   
+ 211   3                              IO_MainPulse = 1;                                               //脉冲IO口拉高
+ 212   3                              divFreqCnt = 0;
+ 213   3                              ReversalCnt = ReversalRange;
+ 214   3                              MotorStatusFlag = Stew;
+ 215   3                              LEDGroupCtrl(led_0, Off);
+ 216   3                              
+ 217   3                              while (!IO_EmeStop);                                    //等待释放
+ 218   3                              delay_ms(50);
+ 219   3                              LEDGroupCtrl(led_1, Off);
+ 220   3                      }
+ 221   2              }
+ 222   1              TimerExternInterruptOperate(Timer0, Enable);
+ 223   1      }
+ 224          
+ 225          //切换电机运行模式
+ 226          void MotorRunModeAdjust (void)
+ 227          {
+ 228   1              MotorModeFlag = !MotorModeFlag;                                 //两种模式切换简写
+ 229   1              
+ 230   1      //      if (MotorModeFlag == LimitRun)
+ 231   1      //              MotorModeFlag = UnlimitRun;
+ 232   1      //      else
+ 233   1      //              MotorModeFlag = LimitRun;
+ 234   1      }
+ 235          
+ 236          //切换输入量的度量单位
+ 237          void LineRadUnitAdjust (void)
+ 238          {
+ 239   1              switch (lrs_flag)
+ 240   1              {
+C51 COMPILER V9.54   PULSE_CONFIG                                                          01/10/2018 11:39:41 PAGE 5   
+
+ 241   2              case RadUnit: lrs_flag = LineUnit; LCD1602_DisplayString(0, ROW2, RotationMeter); break;
+ 242   2              case LineUnit: lrs_flag = RadUnit; LCD1602_DisplayString(0, ROW2, RotationAngle); break;
+ 243   2              }
+ 244   1      }
+ 245          
+ 246          //更换差值
+ 247          u32 DValueSetting (void)
+ 248          {
+ 249   1              u32 dvalue;
+ 250   1              
+ 251   1              switch (lrs_flag)
+ 252   1              {
+ 253   2              case RadUnit: dvalue = 30; break;       //30度
+ 254   2              case LineUnit:  dvalue = 5; break;      //5mm
+ 255   2              default: dvalue = 30; break;            //默认30度
+ 256   2              }
+ 257   1              
+ 258   1              return dvalue;
+ 259   1      }
+ 260          
+ 261          //==========================================================================
+ 262          //code by </MATRIX>@Neod Anderjon
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    840    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     15       5
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

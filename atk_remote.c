@@ -20,7 +20,7 @@ void ExternInt1Service () interrupt 2
 	//判断红外信号是否消失
 	if (IO_Remote == 1)                        
 	{  
-		TimerExternInterruptOperate(Timer1, Enable);                     
+		TimerExternInterruptOperate(Timer1, Enable);		
 		return;                            
 	} 
       
@@ -35,10 +35,13 @@ void ExternInt1Service () interrupt 2
 		for (k = 0; k < 8; k++)         
 		{
 			//等待输入变为低电平，跳过4.5ms高电平信号
-			while (IO_Remote)                     
-				delay_0p14ms(1);  
-			while (!IO_Remote)                    
-				delay_0p14ms(1);    	             
+//			while (IO_Remote)                     
+//				delay_0p14ms(1);  
+//			while (!IO_Remote)                    
+//				delay_0p14ms(1);   
+			while (IO_Remote);                    
+			while (!IO_Remote);                      
+			
 			//计算IR高电平时长
 			while (IO_Remote)                     
 			{
@@ -53,7 +56,7 @@ void ExternInt1Service () interrupt 2
 			}
 			//进行数据位移操作并自动补零   
 			RemoteReceiveCache[j] >>= 1; 
-			//判断数据长度
+			//判断数据长度，这里写6或8都可以
 			if (remote_cnt >= 8)                         
 				RemoteReceiveCache[j] |= 0x80;    //数据最高位补1
 			remote_cnt = 0;                             
@@ -80,18 +83,19 @@ void RemoteDecodeValueHandler (void)
 		LEDGroupCtrl(led_1, On);
 		switch (dv)
 		{
-		case rlogo: 	LCD1602DisplayLogo();		break;	//显示logo
-		case rdelete: 	LCD1602DisplayStatus();		break;	//退回到正常模式
-		case rplay: 	LCD1602DisplaySlideLogo();	break;	//滑动logo
-		case rpower: 	MotorRunModeAdjust();		break;	//切换运行模式
-		case r1: 		PulseProduce_Start();		break;	//电机启动
-		case r2: 		PulseProduce_Stop(); 		break;	//急停(红外解码的延时会干扰急停)
-		case r3: 		MotorPostiveRot;			break;	//正转
-		case r4: 		MotorNegativeRot; 			break;	//反转
-		case r5: 		RotationDistance += 30; 	break;	//增加转动角度，额度30
-		case r6: 		RotationDistance -= 30; 	break;	//减少转动角度，额度30
-		case r7: 		SettingSpeedHz += 500; 		break;	//增加转速，额度500
-		case r8: 		SettingSpeedHz -= 500; 		break;	//减少转速，额度500
+		case rlogo: 	LCD1602DisplayLogo();					break;	//显示logo
+		case rdelete: 	LCD1602DisplayStatus();					break;	//退回到正常模式
+		case rplay: 	LCD1602DisplaySlideLogo();				break;	//滑动logo
+		case rpower: 	MotorRunModeAdjust();					break;	//切换运行模式
+		case rup: 		LineRadUnitAdjust();					break;	//切换输入行程单位
+		case r1: 		PulseProduce_Start();					break;	//电机启动
+		case r2: 		PulseProduce_Stop(); 					break;	//急停(红外解码的延时会干扰急停)
+		case r3: 		MotorPostiveRot;						break;	//正转
+		case r4: 		MotorNegativeRot; 						break;	//反转
+		case r5: 		RotationDistance += DValueSetting(); 	break;	//增加转动角度，额度30
+		case r6: 		RotationDistance -= DValueSetting(); 	break;	//减少转动角度，额度30
+		case r7: 		SettingSpeedHz += 500; 					break;	//增加转速，额度500
+		case r8: 		SettingSpeedHz -= 500; 					break;	//减少转速，额度500
 		}
 		//解码复位
 		dv = rnone;

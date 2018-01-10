@@ -1,0 +1,180 @@
+C51 COMPILER V9.54   MATRIX_KEYBOARD                                                       01/10/2018 11:39:41 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MATRIX_KEYBOARD
+OBJECT MODULE PLACED IN .\Objects\matrix_keyboard.obj
+COMPILER INVOKED BY: D:\Program Files (x86)\KeiluVision\C51\C51\BIN\C51.EXE matrix_keyboard.c OPTIMIZE(9,SPEED) BROWSE D
+                    -EBUG OBJECTEXTEND PRINT(.\Listings\matrix_keyboard.lst) OBJECT(.\Objects\matrix_keyboard.obj)
+
+line level    source
+
+   1          #include "stdafx.h"
+   2          //code by </MATRIX>@Neod Anderjon
+   3          //==========================================================================
+   4          //P2.2-P2.7 4x4矩阵键盘扫描，实际只使用8键
+   5          
+   6          KeyValueSetting gkv = kv_none;
+   7          
+   8          //矩阵键盘键值扫描
+   9          KeyValueSetting MatrixKeyboard_Scan (void) //reentrant
+  10          {
+  11   1              static u8 temp;                                                         //无状态保值
+  12   1              KeyValueSetting key;
+  13   1              
+  14   1              //第一列扫描
+  15   1              MatrixCallPort = 0xfe;                                          //f保值，e写入该列的对应码
+  16   1          temp = MatrixCallPort;
+  17   1          temp = temp & 0xf0;
+  18   1          if (temp != 0xf0)
+  19   1          {
+  20   2                      delay_ms(10);                                                   //消抖
+  21   2                      if (temp != 0xf0)
+  22   2                      {
+  23   3                              temp = MatrixCallPort;
+  24   3                              LEDGroupCtrl(led_1, On);
+  25   3                              switch (temp)
+  26   3                              {
+  27   4                                      //对应码e
+  28   4                              case 0xee: key = kv_start;  break;      //k1
+  29   4                              case 0xde: key = kv_stop;       break;  //k5
+  30   4                              case 0xbe: key = kv_dir_l;      break;  //k9
+  31   4                              case 0x7e: key = kv_dir_r;      break;  //k13
+  32   4                              }
+  33   3                              while (temp != 0xf0)
+  34   3                              {
+  35   4                                      temp = MatrixCallPort;
+  36   4                                      temp = temp & 0xf0;
+  37   4                                      delay_ms(50);
+  38   4                                      LEDGroupCtrl(led_1, Off);
+  39   4                              }
+  40   3                      }
+  41   2          }
+  42   1              
+  43   1              //第二列扫描
+  44   1          MatrixCallPort = 0xfd;                                              //f保值，d写入该列的对应码
+  45   1          temp = MatrixCallPort;
+  46   1          temp = temp & 0xf0;
+  47   1          if (temp != 0xf0)
+  48   1          {
+  49   2                      delay_ms(10);                                                   //消抖
+  50   2                      if (temp != 0xf0)
+  51   2                      {
+  52   3                              temp = MatrixCallPort;
+  53   3                              LEDGroupCtrl(led_1, On);
+  54   3                              switch (temp)
+C51 COMPILER V9.54   MATRIX_KEYBOARD                                                       01/10/2018 11:39:41 PAGE 2   
+
+  55   3                              {
+  56   4                                      //对应码d
+  57   4                              case 0xed: key = kv_ra_plus; break;     //k2
+  58   4                              case 0xdd: key = kv_ra_minu; break;     //k6
+  59   4                              case 0xbd: key = kv_rs_plus; break;     //k10
+  60   4                              case 0x7d: key = kv_rs_minu; break;     //k14
+  61   4                              }
+  62   3                              while (temp != 0xf0)
+  63   3                              {
+  64   4                                      temp = MatrixCallPort;
+  65   4                                      temp = temp & 0xf0;
+  66   4                                      delay_ms(50);
+  67   4                                      LEDGroupCtrl(led_1, Off);
+  68   4                              }
+  69   3                      }
+  70   2          }
+  71   1              
+  72   1              //第三列扫描
+  73   1              MatrixCallPort = 0xfb;                                          //f保值，b写入该列的对应码
+  74   1          temp = MatrixCallPort;
+  75   1          temp = temp & 0xf0;
+  76   1              if (temp != 0xf0)
+  77   1          {
+  78   2                      delay_ms(10);                                                   //消抖
+  79   2                      if (temp != 0xf0)
+  80   2                      {
+  81   3                              temp = MatrixCallPort;
+  82   3                              LEDGroupCtrl(led_1, On);
+  83   3                              switch (temp)
+  84   3                              {
+  85   4                                      //对应码b
+  86   4                              case 0xeb: break;       //k3
+  87   4                              case 0xdb: break;       //k7
+  88   4                              case 0xbb: break;       //k11
+  89   4                              case 0x7b: break;       //k15
+  90   4                              }
+  91   3                              while (temp != 0xf0)
+  92   3                              {
+  93   4                                      temp = MatrixCallPort;
+  94   4                                      temp = temp & 0xf0;
+  95   4                                      delay_ms(50);
+  96   4                                      LEDGroupCtrl(led_1, Off);
+  97   4                              }
+  98   3                      }
+  99   2          }
+ 100   1              
+ 101   1              //第四列扫描
+ 102   1              MatrixCallPort = 0xf7;                                          //f保值，7写入该列的对应码
+ 103   1          temp = MatrixCallPort;
+ 104   1          temp = temp & 0xf0;
+ 105   1              if (temp != 0xf0)
+ 106   1          {
+ 107   2                      delay_ms(10);                                                   //消抖
+ 108   2                      if (temp != 0xf0)
+ 109   2                      {
+ 110   3                              temp = MatrixCallPort;
+ 111   3                              LEDGroupCtrl(led_1, On);
+ 112   3                              switch (temp)
+ 113   3                              {
+ 114   4                                      //对应码7
+ 115   4                              case 0xe7: break;       //k4
+ 116   4                              case 0xd7: break;       //k8
+C51 COMPILER V9.54   MATRIX_KEYBOARD                                                       01/10/2018 11:39:41 PAGE 3   
+
+ 117   4                              case 0xb7: break;       //k12
+ 118   4                              case 0x77: break;       //k16
+ 119   4                              }
+ 120   3                              while (temp != 0xf0)
+ 121   3                              {
+ 122   4                                      temp = MatrixCallPort;
+ 123   4                                      temp = temp & 0xf0;
+ 124   4                                      delay_ms(50);
+ 125   4                                      LEDGroupCtrl(led_1, Off);
+ 126   4                              }
+ 127   3                      }
+ 128   2          }
+ 129   1              
+ 130   1              return key;
+ 131   1      }
+ 132          
+ 133          //矩阵键盘键值处理
+ 134          void MatrixKeyValueHandler (void)
+ 135          {
+ 136   1              KeyValueSetting kv = MatrixKeyboard_Scan();
+ 137   1              
+ 138   1              switch (kv)
+ 139   1              {
+ 140   2              case kv_start:          PulseProduce_Start();                                   break;  //电机启动
+ 141   2              case kv_stop:           PulseProduce_Stop();                                    break;  //急停
+ 142   2              case kv_dir_l:          MotorPostiveRot;                                                break;  //正转                                                                                        
+ 143   2              case kv_dir_r:          MotorNegativeRot;                                               break;  //反转                                                                                        
+ 144   2              case kv_ra_plus:        RotationDistance += DValueSetting();    break;  //增加转动角度，额度30
+ 145   2              case kv_ra_minu:        RotationDistance -= DValueSetting();    break;  //减少转动角度，额度30
+ 146   2              case kv_rs_plus:        SettingSpeedHz += 500;                                  break;  //增加转速，额度500
+ 147   2              case kv_rs_minu:        SettingSpeedHz -= 500;                                  break;  //减少转速，额度500
+ 148   2              }
+ 149   1      }
+ 150          
+ 151          //==========================================================================
+ 152          //code by </MATRIX>@Neod Anderjon
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    403    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

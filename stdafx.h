@@ -67,17 +67,20 @@ sbit IO_Direction 	= P3^7;
 #define Get_Array_Size(array) 	(sizeof(array) / sizeof((array)[0]))
 #endif 
 
-//定时时基
+//定时器参数配置
 #define OscMainFreqConst		0.9216		//11.0592/12
 #define Timer0Value 			50			//此处设定的值越小误差越大，太大计算会超值
 #define Timer1Value				0xFD
 #define DivFreqMaxRange			(500000L / Timer0Value)
 
-//步进电机细分
+//步进电机参数配置
 #define DivisionConst			16			//细分
 #define OneCircultPulse 		200.0f * DivisionConst		
 #define OneCircult360			360.0f		//360度
-#define RadTransferLine			(OneCircultPulse / OneCircult360)
+#define RadUnitConst			(OneCircultPulse / OneCircult360)				//输入角度，转换成脉冲数
+#define PI_3p14					3.141f
+#define AxisRadius				15			//轴半径，单位mm
+#define LineUnitConst			(OneCircultPulse / (2 * PI_3p14 * AxisRadius))	//输入线度，转换成脉冲数
 
 //bool型数据
 typedef enum {True = 1, False = !True} Bool_ClassType;
@@ -104,6 +107,9 @@ typedef enum {Timer0 = 0, Timer1 = 1, Timer2 = 2} TimerNumber;
 
 //定时器模式控制
 typedef enum {bit8 = 0, bit13 = 1, bit16 = 2, bitNone = 3} TimerBit;
+
+//线度角度切换(RA<->RD)
+typedef enum {RadUnit = 0, LineUnit = 1} LineRadSelect;
 
 //封装
 #define LED0_On 				(LED0 = LED_On)
@@ -193,6 +199,7 @@ extern u8 code Direction[];
 extern u8 code Postive[];
 extern u8 code Negative[];
 extern u8 code RotationAngle[];
+extern u8 code RotationMeter[];
 extern u8 code RotationSpeed[];
 extern u8 code WkverLogo[];
 extern u8 code MinusSymbol16[];
@@ -211,6 +218,7 @@ extern RemoteTelecontrollerCode gdv;
 extern LCD1602EnumScreen lcd_es;
 extern MotorRunStatus MotorStatusFlag;
 extern MotorRunMode MotorModeFlag;
+extern LineRadSelect lrs_flag;
 
 //函数声明
 //延时系列函数
@@ -219,7 +227,7 @@ extern void delay_ms (uint16_t i);
 extern void delay_0p14ms (uint8_t x);
 //LED操作函数
 extern void LEDGroupCtrl (LEDGroupNbr nbr, LEDMoveList mv);
-extern void Aft_PeriInit_Blink (void);
+extern void PreInitFinishedBlink (void);
 //LCD1602操作函数
 extern void LCD1602_WriteCommand (u8 com);	      
 extern void LCD1602_WriteData (u8 dat);
@@ -241,6 +249,8 @@ extern void TimerInitValueOperate (TimerNumber nbr, u32 value, TimerBit bt);
 extern void PulseProduce_Start(void);
 extern void PulseProduce_Stop(void);
 extern void MotorRunModeAdjust (void);
+extern void LineRadUnitAdjust (void);
+extern u32 DValueSetting (void);
 //外设控制类函数
 extern KeyValueSetting MatrixKeyboard_Scan (void);
 extern void MatrixKeyValueHandler (void);

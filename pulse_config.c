@@ -11,6 +11,7 @@ u32 CalDivFreqConst;
 u32 ReversalRange;
 MotorRunStatus MotorStatusFlag;
 MotorRunMode MotorModeFlag;
+LineRadSelect lrs_flag;
 
 //EA寄存器操作
 void TimerEnableAllOperate (FunctionStatus flag)
@@ -110,11 +111,16 @@ void Timer_InitConfig (void)
     
 	//设定脉冲使用初值
 	ReversalCnt = 0;
-	SettingSpeedHz = 500;				
-	RotationDistance = 360;
+	SettingSpeedHz = 0;				
+	RotationDistance = 0;
 	divFreqCnt = 0;
 	CalDivFreqConst = DivFreqMaxRange / SettingSpeedHz - 1u;
-	ReversalRange = 2 * RadTransferLine * RotationDistance - 1u;
+	//初始化行距计算
+	switch (lrs_flag)
+	{
+	case RadUnit: ReversalRange = 2 * RadUnitConst * RotationDistance - 1u; break;
+	case LineUnit: ReversalRange = 2 * LineUnitConst * RotationDistance - 1u; break;
+	}
 	MotorStatusFlag = Stew;							//默认静置
 	MotorModeFlag = LimitRun;						//默认有限运行
 }
@@ -144,7 +150,12 @@ void PulseProduce_Start(void)
 		ReversalCnt = 0;						
 		//更新判断量，把计算放在中断外面执行
 		CalDivFreqConst = DivFreqMaxRange / SettingSpeedHz - 1u;
-		ReversalRange = 2 * RadTransferLine * RotationDistance - 1u;
+		//更新行距计算
+		switch (lrs_flag)
+		{
+		case RadUnit: ReversalRange = 2 * RadUnitConst * RotationDistance - 1u; break;
+		case LineUnit: ReversalRange = 2 * LineUnitConst * RotationDistance - 1u; break;
+		}
 		LEDGroupCtrl(led_0, On);
 		MotorStatusFlag = Run;
 		if (lcd_es == dis_status)
@@ -214,12 +225,37 @@ void ExternInt0Service () interrupt 0
 //切换电机运行模式
 void MotorRunModeAdjust (void)
 {
-	MotorModeFlag = !MotorModeFlag;	//两种模式切换简写
+	MotorModeFlag = !MotorModeFlag;					//两种模式切换简写
 	
 //	if (MotorModeFlag == LimitRun)
 //		MotorModeFlag = UnlimitRun;
 //	else
 //		MotorModeFlag = LimitRun;
+}
+
+//切换输入量的度量单位
+void LineRadUnitAdjust (void)
+{
+	switch (lrs_flag)
+	{
+	case RadUnit: lrs_flag = LineUnit; LCD1602_DisplayString(0, ROW2, RotationMeter); break;
+	case LineUnit: lrs_flag = RadUnit; LCD1602_DisplayString(0, ROW2, RotationAngle); break;
+	}
+}
+
+//更换差值
+u32 DValueSetting (void)
+{
+	u32 dvalue;
+	
+	switch (lrs_flag)
+	{
+	case RadUnit: dvalue = 30; break;	//30度
+	case LineUnit:  dvalue = 5; break;	//5mm
+	default: dvalue = 30; break;		//默认30度
+	}
+	
+	return dvalue;
 }
 
 //==========================================================================

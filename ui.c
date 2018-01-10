@@ -11,6 +11,7 @@ u8 code Direction[] 	= "DIR:";				//显示转动方向
 u8 code Postive[] 		= "Pos";				//正转
 u8 code Negative[] 		= "Neg";				//反转
 u8 code RotationAngle[] = "RA:";				//转动角度
+u8 code RotationMeter[] = "RM:";				//转动行程
 u8 code RotationSpeed[] = "RS:";				//转动速度
 //Logo & UI
 u8 code WkverLogo[] 	= "T.WKVER";

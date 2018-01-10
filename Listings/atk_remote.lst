@@ -1,0 +1,137 @@
+C51 COMPILER V9.54   ATK_REMOTE                                                            01/10/2018 11:39:41 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE ATK_REMOTE
+OBJECT MODULE PLACED IN .\Objects\atk_remote.obj
+COMPILER INVOKED BY: D:\Program Files (x86)\KeiluVision\C51\C51\BIN\C51.EXE atk_remote.c OPTIMIZE(9,SPEED) BROWSE DEBUG 
+                    -OBJECTEXTEND PRINT(.\Listings\atk_remote.lst) OBJECT(.\Objects\atk_remote.obj)
+
+line level    source
+
+   1          #include "stdafx.h"
+   2          //code by </MATRIX>@Neod Anderjon
+   3          //==========================================================================
+   4          /*
+   5                  AlienTek STM32 Mini开发板红外解码，改写到51上，红外接收默认接到P3.3外部中断1上
+   6                  红外编码主要有NEC和PPM两种方式，本代码采用NEC协议方式解码
+   7          */
+   8          
+   9          u8 RemoteReceiveCache[7];                           //遥控解码缓存数组
+  10          RemoteTelecontrollerCode gdv = rnone;   //有效识别码提取
+  11          
+  12          //外部中断1服务函数
+  13          void ExternInt1Service () interrupt 2 
+  14          {
+  15   1              uint8_t j, k, remote_cnt = 0u;              
+  16   1         
+  17   1              TimerExternInterruptOperate(Timer1, Disable);
+  18   1              
+  19   1              delay_0p14ms(15);                   //红外消抖
+  20   1              //判断红外信号是否消失
+  21   1              if (IO_Remote == 1)                        
+  22   1              {  
+  23   2                      TimerExternInterruptOperate(Timer1, Enable);            
+  24   2                      return;                            
+  25   2              } 
+  26   1            
+  27   1              //等待输出变为高电平，跳过9ms的前导低电平信号
+  28   1              while (!IO_Remote)                         
+  29   1                      delay_0p14ms(1);                       
+  30   1      
+  31   1              //采集红外遥控器数据
+  32   1              for (j = 0; j < 4; j++)                     
+  33   1              { 
+  34   2                      //分次采集8位数据
+  35   2                      for (k = 0; k < 8; k++)         
+  36   2                      {
+  37   3                              //等待输入变为低电平，跳过4.5ms高电平信号
+  38   3      //                      while (IO_Remote)                     
+  39   3      //                              delay_0p14ms(1);  
+  40   3      //                      while (!IO_Remote)                    
+  41   3      //                              delay_0p14ms(1);   
+  42   3                              while (IO_Remote);                    
+  43   3                              while (!IO_Remote);                      
+  44   3                              
+  45   3                              //计算IR高电平时长
+  46   3                              while (IO_Remote)                     
+  47   3                              {
+  48   4                                      delay_0p14ms(1);                   
+  49   4                                      remote_cnt++;                           
+  50   4                                      //判断计数器累加值，这里设定成30就可以了
+  51   4                                      if (remote_cnt >= 30)                     
+  52   4                                      { 
+  53   5                                              TimerExternInterruptOperate(Timer1, Enable);       
+  54   5                                              return;                      
+C51 COMPILER V9.54   ATK_REMOTE                                                            01/10/2018 11:39:41 PAGE 2   
+
+  55   5                                      }                   
+  56   4                              }
+  57   3                              //进行数据位移操作并自动补零   
+  58   3                              RemoteReceiveCache[j] >>= 1; 
+  59   3                              //判断数据长度，这里写6或8都可以
+  60   3                              if (remote_cnt >= 8)                         
+  61   3                                      RemoteReceiveCache[j] |= 0x80;    //数据最高位补1
+  62   3                              remote_cnt = 0;                             
+  63   3                      }
+  64   2              }
+  65   1              //判断地址码是否相同(第三元素和第四元素相加得到0xff)
+  66   1              if (RemoteReceiveCache[2] != ~RemoteReceiveCache[3])              
+  67   1              { 
+  68   2                      TimerExternInterruptOperate(Timer1, Enable);                  
+  69   2                      return;                           
+  70   2              }
+  71   1              gdv = RemoteReceiveCache[2];
+  72   1              TimerExternInterruptOperate(Timer1, Enable);                    
+  73   1      } 
+  74          
+  75          //红外解码键值处理
+  76          void RemoteDecodeValueHandler (void)
+  77          {
+  78   1              RemoteTelecontrollerCode dv = rnone;
+  79   1              
+  80   1              if (dv != gdv)
+  81   1              {
+  82   2                      dv = gdv;
+  83   2                      LEDGroupCtrl(led_1, On);
+  84   2                      switch (dv)
+  85   2                      {
+  86   3                      case rlogo:     LCD1602DisplayLogo();                                   break;  //显示logo
+  87   3                      case rdelete:   LCD1602DisplayStatus();                                 break;  //退回到正常模式
+  88   3                      case rplay:     LCD1602DisplaySlideLogo();                              break;  //滑动logo
+  89   3                      case rpower:    MotorRunModeAdjust();                                   break;  //切换运行模式
+  90   3                      case rup:               LineRadUnitAdjust();                                    break;  //切换输入行程单位
+  91   3                      case r1:                PulseProduce_Start();                                   break;  //电机启动
+  92   3                      case r2:                PulseProduce_Stop();                                    break;  //急停(红外解码的延时会干扰急停)
+  93   3                      case r3:                MotorPostiveRot;                                                break;  //正转
+  94   3                      case r4:                MotorNegativeRot;                                               break;  //反转
+  95   3                      case r5:                RotationDistance += DValueSetting();    break;  //增加转动角度，额度30
+  96   3                      case r6:                RotationDistance -= DValueSetting();    break;  //减少转动角度，额度30
+  97   3                      case r7:                SettingSpeedHz += 500;                                  break;  //增加转速，额度500
+  98   3                      case r8:                SettingSpeedHz -= 500;                                  break;  //减少转速，额度500
+  99   3                      }
+ 100   2                      //解码复位
+ 101   2                      dv = rnone;
+ 102   2                      gdv = rnone;
+ 103   2                      delay_ms(50);
+ 104   2                      LEDGroupCtrl(led_1, Off);
+ 105   2              }
+ 106   1      }
+ 107          
+ 108          //==========================================================================
+ 109          //code by </MATRIX>@Neod Anderjon
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    373    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+C51 COMPILER V9.54   ATK_REMOTE                                                            01/10/2018 11:39:41 PAGE 3   
+
+   DATA SIZE        =      8       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -22,7 +22,7 @@ void PreSetUpHardware (void)
 	LCD1602DisplayStatus();
 	
 	//初始化完成
-	Aft_PeriInit_Blink();						
+	PreInitFinishedBlink();						
 }
 
 //int main (int argc, char *argv[], char *envp[])			
