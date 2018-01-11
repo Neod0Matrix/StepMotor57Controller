@@ -189,7 +189,6 @@ void ExternInt0Service () interrupt 0
 		if (IO_EmeStop == 0)
 		{
 			LEDGroupCtrl(led_1, On);
-			
 			/*
 				这里和PulseProduce_Stop()内容是一样的
 				但是直接调用PulseProduce_Stop()会有函数重入的警告
@@ -224,6 +223,17 @@ void LineRadUnitAdjust (void)
 	case RadUnit: 	lrs_flag = LineUnit; LCD1602_DisplayString(0, ROW2, RotationMeter); break;
 	case LineUnit: 	lrs_flag = RadUnit; LCD1602_DisplayString(0, ROW2, RotationAngle); 	break;
 	}
+}
+
+//变量限位
+void VariableRangeLimit (void)
+{
+	//转动角度数值显示限位
+	if (RotationDistance <= 0) RotationDistance = 0;
+	else if (RotationDistance > 9999) RotationDistance = 0;
+	//转速计算限制
+	if (SettingSpeedHz <= 0) SettingSpeedHz = 0;
+	else if (SettingSpeedHz > 4000) SettingSpeedHz = 0;		
 }
 
 //==========================================================================

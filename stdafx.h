@@ -1,7 +1,6 @@
 #ifndef __STDAFX_H__
 #define __STDAFX_H__
 #include <reg52.h>
-#include <math.h>
 #include <string.h>
 //code by </MATRIX>@Neod Anderjon
 //==========================================================================
@@ -14,7 +13,7 @@
 //工程声明
 #define __Project_Type__		"PMC"					//工程类型
 #define __AbbrProjectName__		"StepMotor57Controller"	//名称缩写
-#define __Code_Version__ 		"OS_v0p5_LTE"			//长期演进版
+#define __Code_Version__ 		"OS_v0p6_LTE"			//长期演进版
 #define __Laboratory__			"T.WKVER"				//实验室
 #define __Logo__				"Absolute Liberal"		//logo
 #define __Developer__			"Neod Anderjon"			//开发者
@@ -66,14 +65,13 @@ sbit IO_Direction 	= P3^7;
 #endif 
 
 //定时器参数配置
-#define OscMainFreqConst		0.9216		//11.0592/12
 #define Timer0Value 			50			//此处设定的值越小误差越大，太大计算会超值
 #define Timer1Value				0xFD
 #define DivFreqMaxRange			(500000L / Timer0Value)
 
 //步进电机参数配置
-#define DivisionConst			16			//细分
-#define OneCircultPulse 		200.0f * DivisionConst		
+#define DivisionConst			16			//细分数
+#define OneCircultPulse 		200.0f * DivisionConst							//实际旋转一圈360度所需的脉冲数		
 #define OneCircult360			360.0f		//360度
 #define RadUnitConst			(OneCircultPulse / OneCircult360)				//输入角度，转换成脉冲数
 #define PI_3p14					3.141f		
@@ -229,6 +227,7 @@ extern void delay_0p14ms (uint8_t x);
 //LED操作函数
 extern void LEDGroupCtrl (LEDGroupNbr nbr, LEDMoveList mv);
 extern void PreInitFinishedBlink (void);
+extern void LEDDisplayUpdate (void);
 //LCD1602操作函数
 extern void LCD1602_WriteCommand (u8 com);	      
 extern void LCD1602_WriteData (u8 dat);
@@ -257,6 +256,7 @@ extern void DistanceAlgoUpdate (void);
 extern KeyValueSetting MatrixKeyboard_Scan (void);
 extern void MatrixKeyValueHandler (void);
 extern void RemoteDecodeValueHandler (void);
+extern void VariableRangeLimit (void);
 //主函数初始化调用
 extern void Timer_InitConfig (void);
 extern void PreSetUpHardware (void);

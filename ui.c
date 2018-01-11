@@ -80,42 +80,57 @@ void LCD1602DisplaySlideLogo (void)
 	}
 }
 
-//对输入变量限定取值
+//更新CD1602显示
 void LCD1602DisplayUpdate (void)
 {
-	//转动角度数值显示限位
-	if (RotationDistance <= 0) RotationDistance = 0;
-	else if (RotationDistance > 9999) RotationDistance = 0;
-	//转速计算限制
-	if (SettingSpeedHz <= 0) SettingSpeedHz = 0;
-	else if (SettingSpeedHz > 4000) SettingSpeedHz = 0;		
+	/*
+		更新flag，当状态变化时才更新
+		消除LCD更新程序一直调用的情况，加快其他程序的响应
+	*/
+	static MotorRunStatus lcdUpdatestatus = Stew;
+	static MotorDirection lcdUpdatedirection = posrot;
+	static u32 lcdUpdatedistance = 0;
+	static u32 lcdUpdatespeed = 0;
 	
 	if (lcd_es == dis_status)
 	{
 		//更新电机运行状态
-		if (MotorStatusFlag == Stew)
+		if (lcdUpdatestatus != MotorStatusFlag)
 		{
-			LEDGroupCtrl(led_0, Off);
-			LCD1602_DisplayString(3, ROW1, Stop);
-		}
-		else
-		{
-			LEDGroupCtrl(led_0, On);
-			LCD1602_DisplayString(3, ROW1, Start);
+			lcdUpdatestatus = MotorStatusFlag;
+			if (lcdUpdatestatus == Stew)
+			{
+				LEDGroupCtrl(led_0, Off);
+				LCD1602_DisplayString(3, ROW1, Stop);
+			}
+			else
+			{
+				LEDGroupCtrl(led_0, On);
+				LCD1602_DisplayString(3, ROW1, Start);
+			}
 		}
 		//更新方向
-		if (IO_Direction == posrot)
-			LCD1602_DisplayString(13, ROW1, Postive);
-		else 
-			LCD1602_DisplayString(13, ROW1, Negative);
-		//更新变量
-		LCD1602_DisplayNumber(3, RotationDistance, ROW2);
-		LCD1602_DisplayNumber(12, SettingSpeedHz, ROW2);
+		if (lcdUpdatedirection != IO_Direction)
+		{
+			lcdUpdatedirection = IO_Direction;
+			if (lcdUpdatedirection == posrot)
+				LCD1602_DisplayString(13, ROW1, Postive);
+			else 
+				LCD1602_DisplayString(13, ROW1, Negative);
+		}
+		//更新行程
+		if (lcdUpdatedistance != RotationDistance)
+		{
+			lcdUpdatedistance = RotationDistance;
+			LCD1602_DisplayNumber(3, RotationDistance, ROW2);
+		}
+		//更新速度
+		if (lcdUpdatespeed != SettingSpeedHz)
+		{
+			lcdUpdatespeed = SettingSpeedHz;
+			LCD1602_DisplayNumber(12, lcdUpdatespeed, ROW2);
+		}
 	}	
-	if (MotorStatusFlag == Stew)
-		LEDGroupCtrl(led_0, Off);
-	else
-		LEDGroupCtrl(led_0, On);
 }
 
 //更换差值

@@ -68,16 +68,17 @@ void LCD1602_DisplayString (u8 addr, LCD1602_Row row, u8 array[])
 	u16 num;
 	
 	//选择行号
-	if (row == ROW1)
-		LCD1602_WriteCommand(0x80 + addr);            
-	else if (row == ROW2)
-		LCD1602_WriteCommand(0x80 + 0x40 + addr);  
+	switch (row)
+	{
+	case ROW1: LCD1602_WriteCommand(0x80 + addr); break;
+	case ROW2: LCD1602_WriteCommand(0x80 + 0x40 + addr); break;
+	}
 
 	//逐字符显示，strlen求取字符串数组长度
     for (num = 0; num < strlen(array); num++)	
 	{
 		LCD1602_WriteData(array[num]);	 
-		delay_us(5);					//显示延时(LCD1602内部寄存器读写延时)
+		delay_us(10);					//显示延时(LCD1602内部寄存器读写延时)
 	}
 }
 
@@ -85,22 +86,17 @@ void LCD1602_DisplayString (u8 addr, LCD1602_Row row, u8 array[])
 void LCD1602_DisplayNumber (u8 addr, u32 dat, LCD1602_Row row)		    
 {	
 	//选择行号
-	if (row == ROW1)
-		LCD1602_WriteCommand(0x80 + addr);            
-	else if (row == ROW2)
-		LCD1602_WriteCommand(0x80 + 0x40 + addr); 
+	switch (row)
+	{
+	case ROW1: LCD1602_WriteCommand(0x80 + addr); break;
+	case ROW2: LCD1602_WriteCommand(0x80 + 0x40 + addr); break;
+	}
 	
-	//仅兼容4位宽十进制数，自带ASCII转换
+	//仅兼容上限4位宽十进制数，自带ASCII转换
 	LCD1602_WriteData(AsciiTransfer(dat / 1000));      
 	LCD1602_WriteData(AsciiTransfer((dat % 1000) / 100));     
 	LCD1602_WriteData(AsciiTransfer((dat % 100) / 10));             
 	LCD1602_WriteData(AsciiTransfer(dat % 10));       
-	
-	//选择行号
-	if (row == ROW1)
-		LCD1602_WriteCommand(0x80 + addr);            
-	else if (row == ROW2)
-		LCD1602_WriteCommand(0x80 + 0x40 + addr); 
 }
 
 //==========================================================================

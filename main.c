@@ -18,7 +18,7 @@ void PreSetUpHardware (void)
 	LCD1602_Init();		
 	//来一段动画演示
 	LCD1602DisplayLogo();						
-	delay_ms(800);		
+	delay_ms(700);		
 	LCD1602DisplayStatus();				
 }
 
@@ -35,6 +35,8 @@ int main (void)
 	{
 		MatrixKeyValueHandler();				//处理矩阵键盘输入信号
 		RemoteDecodeValueHandler();				//处理红外遥控器输入信号
+		VariableRangeLimit();					//限制变量变化范围
+		LEDDisplayUpdate();						//LED显示更新
 		LCD1602DisplayUpdate();					//设定输入变量范围并更新显示
 	}
 }

@@ -51,5 +51,14 @@ void PreInitFinishedBlink (void)
 	LEDGroupCtrl(led_0, Off);
 }
 
+//更新LED显示状态
+void LEDDisplayUpdate (void)
+{
+	if (MotorStatusFlag == Stew)
+		LEDGroupCtrl(led_0, Off);
+	else
+		LEDGroupCtrl(led_0, On);
+}
+
 //==========================================================================
 //code by </MATRIX>@Neod Anderjon

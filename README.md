@@ -15,7 +15,7 @@ Copyright
 Update
 ===============
 
-	最后更新时间: 2018/1/10pm1648
+	最后更新时间: 2018/1/11pm1327
 
 Project Manual
 ===============
@@ -26,7 +26,7 @@ Project Manual
 	Developer: 		Neod Anderjon 
 	Organization: 	</MATRIX>
 	Laboratory: 	T.WKVER
-	Project_Verson: OS_v0p5_LTE 长期演进版(什么时候TMD才能跑出个stable来啊)_(:з」∠)_ _(┐「ε:)_
+	Project_Verson: OS_v0p6_LTE 长期演进版(什么时候TMD才能跑出个stable来啊)_(:з」∠)_ _(┐「ε:)_
 	
 Use Manual
 ===============
@@ -35,7 +35,7 @@ Use Manual
 	统一包含头文件：stdafx.h 命名源自Windows编程标准
 	之后详细阅读README.md，并且保证自己很清醒
 	
-Inner IO Map
+I/O Port Map
 ===============
 
 	引脚		用途			I/O		
