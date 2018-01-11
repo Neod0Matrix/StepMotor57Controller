@@ -15,7 +15,7 @@ Copyright
 Update
 ===============
 
-	最后更新时间: 2018/1/11pm1327
+	最后更新时间: 2018/1/11pm2330
 
 Project Manual
 ===============
@@ -26,7 +26,7 @@ Project Manual
 	Developer: 		Neod Anderjon 
 	Organization: 	</MATRIX>
 	Laboratory: 	T.WKVER
-	Project_Verson: OS_v0p6_LTE 长期演进版(什么时候TMD才能跑出个stable来啊)_(:з」∠)_ _(┐「ε:)_
+	Project_Verson: OS_v0p7_LTE 长期演进版(什么时候TMD才能跑出个stable来啊)_(:з」∠)_ _(┐「ε:)_
 	
 Use Manual
 ===============
@@ -41,7 +41,7 @@ I/O Port Map
 	引脚		用途			I/O		
 
 	P0-P7		LCD1602驱动		O
-	P1.0-1.1	LED组			O
+	P1.0-P1.7	LED组			O
 	P2.0-P2.7	矩阵键盘		I
 	P3.2		外部中断急停	I
 	P3.3		红外接收管		I

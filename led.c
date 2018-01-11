@@ -3,6 +3,9 @@
 //==========================================================================
 //LED显示控制
 
+//LED流水灯数组
+u8 code LEDFlowTable[] 	= {0xfe, 0xfd, 0xfb, 0xf7, 0xef, 0xdf, 0xbf, 0x7f};
+
 //LED集群动作控制
 void LEDGroupCtrl (LEDGroupNbr nbr, LEDMoveList mv)
 {
@@ -35,20 +38,33 @@ void PreInitFinishedBlink (void)
 	//闪烁几次，直到有人发现已经完成初始化
     for (bb = 0; bb < 3; bb++)								
     {
-		LEDGroupCtrl(led_0, Blink);
-        LEDGroupCtrl(led_1, Blink);
+		LEDCallPort = 0x00;
         delay_ms(50);
-        LEDGroupCtrl(led_0, Blink);
-        LEDGroupCtrl(led_1, Blink);
+        LEDCallPort = 0xff;
         delay_ms(50);
-        LEDGroupCtrl(led_0, Blink);
-        LEDGroupCtrl(led_1, Blink);
+        LEDCallPort = 0x00;
         delay_ms(50);
-        LEDGroupCtrl(led_0, Blink);
-        LEDGroupCtrl(led_1, Blink);
+        LEDCallPort = 0xff;
     }
-	LEDGroupCtrl(led_0, Off);
-	LEDGroupCtrl(led_0, Off);
+	LEDCallPort = 0xff;
+}
+
+//快速开场动画LED
+void QuickFlowLED (void)
+{
+	uint8_t i, j = 0;
+	static Bool_ClassType changeFlowDir = False;
+	
+	for (i = 0; i < 14; i++)
+	{
+		//左右循环跑马灯
+		if (j == 7) changeFlowDir = True;
+		else if (j == 0) changeFlowDir = False;
+		if (!changeFlowDir) LEDCallPort = LEDFlowTable[++j];
+		else LEDCallPort = LEDFlowTable[--j];
+		delay_ms(50);
+	}
+	LEDCallPort = 0xff;
 }
 
 //更新LED显示状态

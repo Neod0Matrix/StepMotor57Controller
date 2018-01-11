@@ -13,7 +13,7 @@
 //工程声明
 #define __Project_Type__		"PMC"					//工程类型
 #define __AbbrProjectName__		"StepMotor57Controller"	//名称缩写
-#define __Code_Version__ 		"OS_v0p6_LTE"			//长期演进版
+#define __Code_Version__ 		"OS_v0p7_LTE"			//长期演进版
 #define __Laboratory__			"T.WKVER"				//实验室
 #define __Logo__				"Absolute Liberal"		//logo
 #define __Developer__			"Neod Anderjon"			//开发者
@@ -48,6 +48,8 @@ sbit IO_Direction 	= P3^7;
 
 //LCD1602 P口
 #define LCD1602CallPort			P0
+//LED灯组 P口
+#define LEDCallPort				P1
 //矩阵键盘P口
 #define MatrixCallPort			P2
 
@@ -218,6 +220,7 @@ extern LCD1602EnumScreen lcd_es;
 extern MotorRunStatus MotorStatusFlag;
 extern MotorRunMode MotorModeFlag;
 extern LineRadSelect lrs_flag;
+extern u8 code LEDFlowTable[];
 
 //函数声明
 //延时系列函数
@@ -228,6 +231,7 @@ extern void delay_0p14ms (uint8_t x);
 extern void LEDGroupCtrl (LEDGroupNbr nbr, LEDMoveList mv);
 extern void PreInitFinishedBlink (void);
 extern void LEDDisplayUpdate (void);
+extern void QuickFlowLED (void);
 //LCD1602操作函数
 extern void LCD1602_WriteCommand (u8 com);	      
 extern void LCD1602_WriteData (u8 dat);

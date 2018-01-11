@@ -24,6 +24,7 @@ u8 code ProjectLogo[]	= "StepMotorControl";
 //显示logo屏内容
 void LCD1602DisplayLogo (void)
 {
+	QuickFlowLED();
 	LCD1602_ClearScreen();
 	lcd_es = dis_logo;
 	LCD1602_DisplayString(5, ROW1, WkverLogo);
@@ -62,7 +63,8 @@ void LCD1602DisplayStatus (void)
 //滑动logo
 void LCD1602DisplaySlideLogo (void)
 {
-	uint8_t i;
+	uint8_t i, j = 0;
+	Bool_ClassType changeFlowDir = False;
 	
 	LCD1602_ClearScreen();
 	lcd_es = dis_slide;
@@ -70,13 +72,20 @@ void LCD1602DisplaySlideLogo (void)
 	{
 		for (i = 0; i < 16; i++)
 		{
+			//左右循环跑马灯
+			if (j == 7) changeFlowDir = True;
+			else if (j == 0) changeFlowDir = False;
+			if (!changeFlowDir) LEDCallPort = LEDFlowTable[++j];
+			else LEDCallPort = LEDFlowTable[--j];
+			
+			//LCD动画
 			LCD1602_DisplayString(0, ROW1, MinusSymbol16);
 			LCD1602_DisplayString(i, ROW1, WkverLogo);
 			LCD1602_DisplayString(0, ROW2, ProjectLogo);
-			delay_ms(500);
 			if (gdv != rplay) break;	//退出显示循环
 		}
 		if (gdv != rplay) break;		//退出显示循环
+		delay_ms(50);						
 	}
 }
 
@@ -99,15 +108,9 @@ void LCD1602DisplayUpdate (void)
 		{
 			lcdUpdatestatus = MotorStatusFlag;
 			if (lcdUpdatestatus == Stew)
-			{
-				LEDGroupCtrl(led_0, Off);
 				LCD1602_DisplayString(3, ROW1, Stop);
-			}
 			else
-			{
-				LEDGroupCtrl(led_0, On);
 				LCD1602_DisplayString(3, ROW1, Start);
-			}
 		}
 		//更新方向
 		if (lcdUpdatedirection != IO_Direction)
