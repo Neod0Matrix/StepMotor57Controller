@@ -113,13 +113,12 @@ void Timer_InitConfig (void)
 	TimerExternInterruptOperate(Timer1, Enable);	//打开外部中断1使能
     
 	//设定脉冲使用初值
-	ReversalCnt = 0;
 	SettingSpeedHz = 0;				
 	RotationDistance = 0;
 	divFreqCnt = 0;
-	CalDivFreqConst = DivFreqMaxRange / SettingSpeedHz - 1u;
-	//初始化行距计算
-	DistanceAlgoUpdate();
+	CalDivFreqConst = 0;
+	ReversalCnt = 0;
+	ReversalRange = 0;
 	MotorStatusFlag = Stew;							//默认静置
 	MotorModeFlag = LimitRun;						//默认有限运行
 }
@@ -137,18 +136,16 @@ void PulseProduce_Stop (void)
 //固有脉冲数自动完成
 void PulseProduce_Start(void)					    
 {				
+	//计数变量初始化清零
+	divFreqCnt = 0;
+	ReversalCnt = 0;						
+	CalDivFreqConst = DivFreqMaxRange / SettingSpeedHz - 1;//更新分频数
+	DistanceAlgoUpdate();							//更新脉冲数
 	//判断送入值是否有效
 	if (SettingSpeedHz != 0u && RotationDistance != 0u)
 	{
-		//计数变量初始化清零
-		divFreqCnt = 0;
-		ReversalCnt = 0;						
-		//更新判断量，把计算放在中断外面执行
-		CalDivFreqConst = DivFreqMaxRange / SettingSpeedHz - 1u;
-		DistanceAlgoUpdate();
 		MotorStatusFlag = Run;						//该标志位直接控制LCD和LED的状态更新
-		//使能T0定时器，脉冲开始处理计数和发送		
-		TimerTriggerRegisterOperate(Timer0, Enable);							
+		TimerTriggerRegisterOperate(Timer0, Enable);//使能T0定时器，脉冲开始处理计数和发送					
 	}
 }
 
@@ -158,25 +155,23 @@ void PulseProduce_Start(void)
 */
 void Timer0Service () interrupt 1
 {
-	//TimerInitValueOperate(Timer0, Timer0Value, bit16);//函数不可重入
 	TH0 = (65536 - Timer0Value) / 256;
 	TL0 = (65536 - Timer0Value) % 256;
 	
-	//更新分频系数
-	if (divFreqCnt == CalDivFreqConst)
+	//脉冲自动完成
+	if (ReversalCnt == ReversalRange && MotorModeFlag == LimitRun)
+	{
+		TimerTriggerRegisterOperate(Timer0, Disable);	
+		IO_MainPulse = 1;	
+		MotorStatusFlag = Stew;
+	}
+	//分频
+	if (++divFreqCnt == CalDivFreqConst)
     {
         divFreqCnt = 0;
         IO_MainPulse = !IO_MainPulse;	
-		if (ReversalCnt == ReversalRange && MotorModeFlag == LimitRun)
-		{
-			//此处进行计算(不管复杂度)会干扰信号频率
-			TimerTriggerRegisterOperate(Timer0, Disable);	
-			IO_MainPulse = 1;	
-			MotorStatusFlag = Stew;
-		}
-		ReversalCnt++;	
+		ReversalCnt++;									//计数脉冲
     }
-	divFreqCnt++;
 }
 
 //外部中断急停(速度比矩阵键盘和红外解码要快很多)

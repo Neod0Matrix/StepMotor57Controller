@@ -67,8 +67,8 @@ sbit IO_Direction 	= P3^7;
 #endif 
 
 //定时器参数配置
-#define Timer0Value 			50			//此处设定的值越小误差越大，太大计算会超值
-#define Timer1Value				0xFD
+#define Timer0Value 			50			//此处设定的值限定在1-100以内，建议50
+#define Timer1Value				0xfd
 #define DivFreqMaxRange			(500000L / Timer0Value)
 
 //步进电机参数配置

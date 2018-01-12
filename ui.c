@@ -14,7 +14,7 @@ u8 code RotationAngle[] = "RA:";				//转动角度
 u8 code RotationMeter[] = "RM:";				//转动行程
 u8 code RotationSpeed[] = "RS:";				//转动速度
 //Logo & UI
-u8 code SpaceSymbol16[] = "                ";	//清除第一行原来的显示
+u8 code SpaceSymbol16[] = "                ";	//清除第一行原来的显示(16个空格)
 u8 code WkverLogo[] 	= "T.WKVER";
 u8 code MatrixLogo[]	= "</MATRIX>";
 u8 code codeBy[]		= "Code By";

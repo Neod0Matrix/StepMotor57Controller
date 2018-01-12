@@ -15,12 +15,12 @@ Copyright
 Update
 ===============
 
-	最后更新时间: 2018/1/12pm1451
+	最后更新时间: 2018/1/12pm2000
 
 Project Manual
 ===============
 
-	</MATRIX>提供嵌入式开发维护支持
+	</MATRIX>提供开发维护支持
 
 	MCU:			STC89C52RC
 	Developer: 		Neod Anderjon 
