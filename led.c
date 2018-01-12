@@ -55,6 +55,7 @@ void QuickFlowLED (void)
 	uint8_t i, j = 0;
 	static Bool_ClassType changeFlowDir = False;
 	
+	//双7位变换
 	for (i = 0; i < 14; i++)
 	{
 		//左右循环跑马灯

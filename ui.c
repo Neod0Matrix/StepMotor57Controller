@@ -14,12 +14,13 @@ u8 code RotationAngle[] = "RA:";				//转动角度
 u8 code RotationMeter[] = "RM:";				//转动行程
 u8 code RotationSpeed[] = "RS:";				//转动速度
 //Logo & UI
+u8 code SpaceSymbol16[] = "                ";	//清除第一行原来的显示
 u8 code WkverLogo[] 	= "T.WKVER";
-u8 code MinusSymbol16[] = "--------------->";	//特效线
 u8 code MatrixLogo[]	= "</MATRIX>";
 u8 code codeBy[]		= "Code By";
 u8 code ArthorName[]	= "Neod Anderjon";
 u8 code ProjectLogo[]	= "StepMotorControl";
+u8 code PressNewKey[]	= "Press New Key";		
 
 //显示logo屏内容
 void LCD1602DisplayLogo (void)
@@ -60,32 +61,41 @@ void LCD1602DisplayStatus (void)
 	LCD1602_DisplayNumber(12, SettingSpeedHz, ROW2);
 }
 
-//滑动logo
-void LCD1602DisplaySlideLogo (void)
+//滑动logo动画
+void LCD1602DisplayAnime (void)
 {
-	uint8_t i, j = 0;
-	Bool_ClassType changeFlowDir = False;
+	uint8_t i = 0, j = 0;
+	Bool_ClassType changeFlowDir = False, changeMoveDir = False;
 	
 	LCD1602_ClearScreen();
 	lcd_es = dis_slide;
 	while (True)
-	{
-		for (i = 0; i < 16; i++)
+	{	
+		//左右循环跑马灯
+		if (j == 7) changeFlowDir = True;
+		else if (j == 0) changeFlowDir = False;
+		if (!changeFlowDir) LEDCallPort = LEDFlowTable[++j];
+		else LEDCallPort = LEDFlowTable[--j];
+		
+		//LCD动画
+		if (i == 9) changeMoveDir = True;
+		else if (i == 0) changeMoveDir = False;
+		LCD1602_DisplayString(0, ROW1, SpaceSymbol16);
+		if (!changeMoveDir)
+			LCD1602_DisplayString(++i, ROW1, WkverLogo);
+		else
+			LCD1602_DisplayString(--i, ROW1, WkverLogo);
+		LCD1602_DisplayString(0, ROW2, ProjectLogo);
+		
+		//退出显示循环
+		if (gdv != rplay) 
 		{
-			//左右循环跑马灯
-			if (j == 7) changeFlowDir = True;
-			else if (j == 0) changeFlowDir = False;
-			if (!changeFlowDir) LEDCallPort = LEDFlowTable[++j];
-			else LEDCallPort = LEDFlowTable[--j];
-			
-			//LCD动画
-			LCD1602_DisplayString(0, ROW1, MinusSymbol16);
-			LCD1602_DisplayString(i, ROW1, WkverLogo);
-			LCD1602_DisplayString(0, ROW2, ProjectLogo);
-			if (gdv != rplay) break;	//退出显示循环
+			LEDCallPort = 0xff;
+			LCD1602_DisplayString(0, ROW1, SpaceSymbol16);
+			LCD1602_DisplayString(1, ROW1, PressNewKey);
+			return;
 		}
-		if (gdv != rplay) break;		//退出显示循环
-		delay_ms(50);						
+		delay_ms(150);						
 	}
 }
 

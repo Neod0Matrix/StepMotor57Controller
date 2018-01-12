@@ -147,6 +147,7 @@ typedef enum
 //矩阵键盘键值设定
 typedef enum
 {
+	//电机控制
 	kv_none 	= 0,
 	kv_start 	= 1,
 	kv_stop 	= 2,
@@ -203,7 +204,7 @@ extern u8 code RotationAngle[];
 extern u8 code RotationMeter[];
 extern u8 code RotationSpeed[];
 extern u8 code WkverLogo[];
-extern u8 code MinusSymbol16[];
+extern u8 code SpaceSymbol16[];
 extern u8 code MatrixLogo[];
 extern u8 code codeBy[];
 extern u8 code ArthorName[];
@@ -241,7 +242,7 @@ extern void LCD1602_DisplayNumber (u8 addr, u32 dat, LCD1602_Row row);
 extern void LCD1602DisplayLogo (void);
 extern void LCD1602DisplayStatus (void);
 extern void LCD1602_ClearScreen (void);
-extern void LCD1602DisplaySlideLogo (void);
+extern void LCD1602DisplayAnime (void);
 //电机控制、定时器配置函数
 extern void TimerEnableAllOperate (FunctionStatus flag);
 extern void TimerModeRegisterOperate (char order);

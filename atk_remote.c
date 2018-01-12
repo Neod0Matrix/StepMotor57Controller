@@ -80,7 +80,7 @@ void RemoteDecodeValueHandler (void)
 		{
 		case rlogo: 	LCD1602DisplayLogo();					break;	//显示logo
 		case rdelete: 	LCD1602DisplayStatus();					break;	//退回到正常模式
-		case rplay: 	LCD1602DisplaySlideLogo();				break;	//滑动logo
+		case rplay: 	LCD1602DisplayAnime();					break;	//滑动logo动画
 		case rpower: 	MotorRunModeAdjust();					break;	//切换运行模式
 		case rup: 		LineRadUnitAdjust();					break;	//切换输入行程单位
 		case r1: 		PulseProduce_Start();					break;	//电机启动

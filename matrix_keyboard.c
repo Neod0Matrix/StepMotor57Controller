@@ -12,7 +12,7 @@ KeyValueSetting MatrixKeyboard_Scan (void) //reentrant
 	KeyValueSetting key;
 	
 	//第一列扫描
-	MatrixCallPort = 0xfe;						//f保值，e写入该列的对应码
+	MatrixCallPort = 0xfe;						//11111110
     temp = MatrixCallPort;
     temp = temp & 0xf0;
     if (temp != 0xf0)
@@ -24,7 +24,6 @@ KeyValueSetting MatrixKeyboard_Scan (void) //reentrant
 			LEDGroupCtrl(led_1, On);
 			switch (temp)
 			{
-				//对应码e
 			case 0xee: key = kv_start;  break;	//k1
 			case 0xde: key = kv_stop; 	break;	//k5
 			case 0xbe: key = kv_dir_l;	break;	//k9
@@ -41,7 +40,7 @@ KeyValueSetting MatrixKeyboard_Scan (void) //reentrant
     }
 	
 	//第二列扫描
-    MatrixCallPort = 0xfd;						//f保值，d写入该列的对应码
+    MatrixCallPort = 0xfd;						//11111101
     temp = MatrixCallPort;
     temp = temp & 0xf0;
     if (temp != 0xf0)
@@ -53,7 +52,6 @@ KeyValueSetting MatrixKeyboard_Scan (void) //reentrant
 			LEDGroupCtrl(led_1, On);
 			switch (temp)
 			{
-				//对应码d
 			case 0xed: key = kv_ra_plus; break;	//k2
 			case 0xdd: key = kv_ra_minu; break;	//k6
 			case 0xbd: key = kv_rs_plus; break;	//k10
@@ -70,7 +68,7 @@ KeyValueSetting MatrixKeyboard_Scan (void) //reentrant
     }
 	
 	//第三列扫描
-	MatrixCallPort = 0xfb;						//f保值，b写入该列的对应码
+	MatrixCallPort = 0xfb;						//11111011
     temp = MatrixCallPort;
     temp = temp & 0xf0;
 	if (temp != 0xf0)
@@ -82,7 +80,6 @@ KeyValueSetting MatrixKeyboard_Scan (void) //reentrant
 			LEDGroupCtrl(led_1, On);
 			switch (temp)
 			{
-				//对应码b
 			case 0xeb: break;	//k3
 			case 0xdb: break;	//k7
 			case 0xbb: break;	//k11
@@ -99,7 +96,7 @@ KeyValueSetting MatrixKeyboard_Scan (void) //reentrant
     }
 	
 	//第四列扫描
-	MatrixCallPort = 0xf7;						//f保值，7写入该列的对应码
+	MatrixCallPort = 0xf7;						//11110111
     temp = MatrixCallPort;
     temp = temp & 0xf0;
 	if (temp != 0xf0)
@@ -111,7 +108,6 @@ KeyValueSetting MatrixKeyboard_Scan (void) //reentrant
 			LEDGroupCtrl(led_1, On);
 			switch (temp)
 			{
-				//对应码7
 			case 0xe7: break;	//k4
 			case 0xd7: break;	//k8
 			case 0xb7: break;	//k12
@@ -126,6 +122,7 @@ KeyValueSetting MatrixKeyboard_Scan (void) //reentrant
 			}
 		}
     }
+	gkv = key;
 	
 	return key;
 }
@@ -133,8 +130,9 @@ KeyValueSetting MatrixKeyboard_Scan (void) //reentrant
 //矩阵键盘键值处理
 void MatrixKeyValueHandler (void)
 {
-	KeyValueSetting kv = MatrixKeyboard_Scan();
+	KeyValueSetting kv;
 	
+	kv = MatrixKeyboard_Scan();
 	switch (kv)
 	{
 	case kv_start: 		PulseProduce_Start();					break;	//电机启动
