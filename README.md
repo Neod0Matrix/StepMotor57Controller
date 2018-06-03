@@ -8,14 +8,14 @@ Title
 Copyright
 ===============
 
-	Copyright @2017 T.WKVER </MATRIX>
+	Copyright @2018 T.WKVER </MATRIX>
 	Code by </MATRIX>@Neod Anderjon(LeaderN)
 	Thank to fork or watch my project
 
 Update
 ===============
 
-	最后更新时间: 2018/06/03pm1514
+	最后更新时间: 2018/06/03pm1525
 
 Project Manual
 ===============
@@ -40,9 +40,10 @@ I/O Port Map
 
 	引脚		用途			I/O		
 
-	P0-P7		LCD1602驱动		O
+	P0.0-P0.7	LCD1602驱动		O
 	P1.0-P1.7	LED组			O
 	P2.0-P2.7	矩阵键盘		I
+	P3.0-3.1	串口
 	P3.2		外部中断急停	I
 	P3.3		红外接收管		I
 	P3.4-P3.5	LCD1602位设		O
