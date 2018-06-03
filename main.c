@@ -12,7 +12,11 @@ void PreSetUpHardware (void)
 	LEDGroupCtrl(led_0, Off);
 	LEDGroupCtrl(led_1, Off);
 	
-	Timer_InitConfig();							//定时器及脉冲计算器初始化配置
+	//定时器及脉冲计算器初始化配置
+	Timer_InitConfig();							
+	
+	//串口显示系统信息
+	InitDisplayUARTInfo();						
 	
 	//显示器初始化	
 	LCD1602_Init();		

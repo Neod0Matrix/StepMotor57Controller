@@ -93,11 +93,14 @@ void Timer_InitConfig (void)
 {
 	/*
 		定时器0用于脉冲发生器及急停外部中断
-		定时器1开启外部中断用于红外解码接收
+		定时器1开启外部中断用于红外解码接收、并用作串口波特率发生器
 	*/
-	TimerModeRegisterOperate(0x01);		
+	TimerModeRegisterOperate(0x21);		
 	TimerInitValueOperate(Timer0, Timer0Value, bit16);
+	
+	SerialControlRegisterConfig(0x50);				//9600波特率
 	TimerInitValueOperate(Timer1, Timer1Value, bitNone);    
+	
 	TimerEnableAllOperate(Enable);					//打开定时器总使能
 	
 	//脉冲发生器
@@ -111,6 +114,8 @@ void Timer_InitConfig (void)
 	TimerTriggerRegisterOperate(Timer1, Enable);	//打开T1			
 	TimerInterruptOperate(Timer1, Enable);			//允许外部中断
 	TimerExternInterruptOperate(Timer1, Enable);	//打开外部中断1使能
+	
+	SerialModeRegisterConfig(0, 1, 0, 0x00, 0);		//串口模式配置
     
 	//设定脉冲使用初值
 	SettingSpeedHz = 0;				
@@ -164,6 +169,7 @@ void Timer0Service () interrupt 1
 		TimerTriggerRegisterOperate(Timer0, Disable);	
 		IO_MainPulse = 1;	
 		MotorStatusFlag = Stew;
+		return;											//直接跳出
 	}
 	//分频
 	if (++divFreqCnt == CalDivFreqConst)

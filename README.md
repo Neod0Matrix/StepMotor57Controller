@@ -15,7 +15,7 @@ Copyright
 Update
 ===============
 
-	最后更新时间: 2018/1/12pm2000
+	最后更新时间: 2018/06/03pm1514
 
 Project Manual
 ===============
@@ -26,7 +26,7 @@ Project Manual
 	Developer: 		Neod Anderjon 
 	Organization: 	</MATRIX>
 	Laboratory: 	T.WKVER
-	Project_Verson: OS_v0p7_LTE 长期演进版(什么时候TMD才能跑出个stable来啊)_(:з」∠)_ _(┐「ε:)_
+	Project_Verson: OS_v0p8_LTE 长期演进版(什么时候TMD才能跑出个stable来啊)_(:з」∠)_ _(┐「ε:)_
 	
 Use Manual
 ===============

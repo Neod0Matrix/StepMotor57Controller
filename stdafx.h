@@ -2,6 +2,8 @@
 #define __STDAFX_H__
 #include <reg52.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 //code by </MATRIX>@Neod Anderjon
 //==========================================================================
 //Windows编程stdafx.h全局声明
@@ -13,7 +15,7 @@
 //工程声明
 #define __Project_Type__		"PMC"					//工程类型
 #define __AbbrProjectName__		"StepMotor57Controller"	//名称缩写
-#define __Code_Version__ 		"OS_v0p7_LTE"			//长期演进版
+#define __Code_Version__ 		"OS_v0p8_LTE"			//长期演进版
 #define __Laboratory__			"T.WKVER"				//实验室
 #define __Logo__				"Absolute Liberal"		//logo
 #define __Developer__			"Neod Anderjon"			//开发者
@@ -68,7 +70,7 @@ sbit IO_Direction 	= P3^7;
 
 //定时器参数配置
 #define Timer0Value 			50			//此处设定的值限定在1-100以内，建议50
-#define Timer1Value				0xfd
+#define Timer1Value				0xfd		//9600波特率
 #define DivFreqMaxRange			(500000L / Timer0Value)
 
 //步进电机参数配置
@@ -262,6 +264,12 @@ extern KeyValueSetting MatrixKeyboard_Scan (void);
 extern void MatrixKeyValueHandler (void);
 extern void RemoteDecodeValueHandler (void);
 extern void VariableRangeLimit (void);
+//串口任务函数
+extern void SerialControlRegisterConfig (u8 scon_baud);
+extern void SerialModeRegisterConfig (u8 sm0, u8 sm1, u8 ren, u8 pcon, u8 es);
+extern void UART_SendByte (u8 ds);
+extern void UART_SendString (u8* str);
+extern void InitDisplayUARTInfo (void);
 //主函数初始化调用
 extern void Timer_InitConfig (void);
 extern void PreSetUpHardware (void);
